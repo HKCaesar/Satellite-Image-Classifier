@@ -15,6 +15,7 @@
 \usepackage{titlesec}
 \usepackage{float}
 \usepackage{setspace}
+\usepackage{comment}
 \titleformat{\chapter}{\normalfont\huge}{\thechapter.}{15pt}{\huge}
 \renewcommand*{\familydefault}{\sfdefault}
 \hyphenpenalty=5000 
@@ -93,16 +94,52 @@ A new opportunity has arisen with the arrival of satellite imagery and an ever i
 This paper proposes an update. Now a more straightforward approach has been chosen in which the emphasis lies on the actual neural network rather than the conversion of interpreted images to vector graphic maps. The new approach deals with image patches rather than pixels. This document discusses the newly acquired concept with a list of features and the actual implementation details. Also an updated schedule will be presented. 
 
 \chapter{Concept}
+% Something about that we downscaled our first ambitious plan, that we already played around a bit and already booked some success. 
 
 \section{Impression}
+\begin{comment}
 \begin{figure}[ht!]
     \centering
     \includegraphics[width=1\textwidth]{interface.jpg}
     \caption{Impression of what the user interacts with.}
 \end{figure}
+\end{comment}
 
 \section{MoSCoW}
-% Categories
+Since a limited amount of time is available and we thought of quite some experiments and features that could be added, we used the MoSCoW method to get our priorities straight and focus on the most important requirements. MoSCow stands for \textit{Must have}, \textit{Should have}, \textit{Could have} and \textit{Would have}, all the requirements are labeled in these four classes. 
+
+\subsection{Must have}
+Must have requirements are critical to project success. 
+\begin{itemize}
+\item Create code based on a \textit{Convolutional Neural Network} (CNN) that enables automatic classification of patches from satellite images. Considering images acquired on provincial level and a substantial amount of pixels in one patch (at least 50 x 50 pixels). 
+\item At least the following classes should be recognized: vegetation, city and water. 
+\item Develop a way to visualize the automatic classifications clearly.
+\end{itemize}
+
+\subsection{Should have}
+Requirements labeled as should have are important to book success, but not necessary for delivery. 
+
+\begin{itemize}
+\item Create a clear interface in which the unlabeled images can be uploaded, and the output consists of labeled images. 
+\item Calculate the uncertainty in the classification and ask user input for very uncertain patches.
+\end{itemize}
+
+\subsection{Could have}
+It would be very nice if we would be able to reach the Could have feautures, but they are not critical. 
+\begin{itemize}
+\item Experiment with pre-processed images (noise reduction, gradient calculations)
+\item Analyze images on city level, so with more details present. For this purpose new classes have to be added, such as roadways, cycle paths, 	buildings, distinct vegetations etc. 
+\item Experiment with other models than the state-of-the art LeNet-1 CNN. For examples, a CNN in which Genetic Algorithms are incorporated, or implementing an Extreme Learning Machine for the training of the weights. 
+\end{itemize}
+
+\subsection{Would have}
+These requirements are implemented only in the most ideal situation. They are considered as the dream project, sometimes serving as a suggestion for further projects. 
+
+\begin{itemize}
+\item Develop a method for high-detailed automatic vector graphics, in which segmentation of the distinct labeled classes is incorporated.
+\item Use the input of the users to improve the automatic classification. 
+\item Sell the software package to Google. 
+\end{itemize}
 
 \chapter{Implementation}
 
