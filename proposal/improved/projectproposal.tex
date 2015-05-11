@@ -1,5 +1,3 @@
-
-
 \documentclass[a4paper,onecolumn]{report}
 \usepackage{caption}
 \usepackage{subcaption}
@@ -88,25 +86,33 @@ Maniek \textsc{Santokhi}
 \chapter{Introduction}
 
 Mapping the world around us has always been a human endeavour to advance economical output. A better understanding of the places around us makes for more efficient travelling and exploitation of the land. However, it has always been a very slow and tedious process to produce these maps, something technology has not changed just yet.
-\\
+
 A new opportunity has arisen with the arrival of satellite imagery and an ever increasing amount of computational power. An opportunity where this mapping can be done automatically so that this tedious and slow job can be processed even more quickly and perhaps more accurately. It is with this in mind we further analyse any possibilities.\\
 \\
-This paper proposes an update. Now a more straightforward approach has been chosen in which the emphasis lies on the actual neural network rather than the conversion of interpreted images to vector graphic maps. The new approach deals with image patches rather than pixels. This document discusses the newly acquired concept with a list of features and the actual implementation details. Also an updated schedule will be presented. 
+This paper proposes an update. Now a more straightforward approach has been chosen in which the emphasis lies on the actual Neural Network rather than the conversion of interpreted images to vector graphic maps. The new approach deals with image patches rather than pixels. This document discusses the newly acquired concept with a list of features and the actual implementation details. Also an updated schedule will be presented. 
 
 \chapter{Concept}
-% Something about that we downscaled our first ambitious plan, that we already played around a bit and already booked some success. 
+Earlier attempts to conceptualise the idea to automate map making resulted in a proposal that too heavily focussed on the actual map creation rather than the classification. For a Neural Network course this was deemed not befitted enough. The plan was also quite far reaching to start with. Thoughts were put into downscaling this ambitious plan. We played around a bit and came up with a new concept which will be discussed in this chapter. Firstly, an impression is given how the end user interacts with our system. This will lay the groundwork for how the Neural Network will be constructed. Secondly through the principles of MoSCoW a flexible requirements list is established. Actual talk about the classification is done it the subsequent chapter.
 
 \section{Impression}
-\begin{comment}
-\begin{figure}[ht!]
+
+Below in figure \ref{fig:impression} an impression is given of what the end user will interact with and a possible result that might come about from said interaction.\\
+
+\begin{figure}[h!]
     \centering
-    \includegraphics[width=1\textwidth]{interface.jpg}
+    \includegraphics[width=0.8\textwidth]{interface.jpg}
     \caption{Impression of what the user interacts with.}
+	\label{fig:impression}
 \end{figure}
-\end{comment}
+\noindent
+The most notable attention grabber is the satellite image. This image will be acquired through a random call from a homogenous satellite image database on every new instantiation of the system. Another possibility might be the use of map search over the same database, and as such a search box is being displayed.\\
+\\
+On the right one can see labels (Forest, City, Water) which correspond with the labels which are outputs of the classification. Since the output of our algorithm is continuous over a range of $0$ to $1$, normalised sliders are introduced to correspond to that particular result.\\
+\\
+Results obtained from our algorithm, given the current satellite image as input, are graphically feed back to the user. The impression above does that by showing a correspondence between image patches and their respective label via color coding laid over the satellite image. 
 
 \section{MoSCoW}
-Since a limited amount of time is available and we thought of quite some experiments and features that could be added, we used the MoSCoW method to get our priorities straight and focus on the most important requirements. MoSCow stands for \textit{Must have}, \textit{Should have}, \textit{Could have} and \textit{Would have}, all the requirements are labeled in these four classes. 
+Since a limited amount of time is available and we thought of quite some experiments and features that could be added, we used the MoSCoW method to get our priorities straight and focus on the most important requirements. MoSCow stands for \textit{Must have}, \textit{Should have}, \textit{Could have} and \textit{Would have}. All the requirements are labeled in these four classes.\\
 
 \subsection{Must have}
 Must have requirements are critical to project success. 
