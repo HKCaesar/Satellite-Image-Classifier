@@ -92,7 +92,7 @@ A new opportunity has arisen with the arrival of satellite imagery and an ever i
 This paper proposes an update. Now a more straightforward approach has been chosen in which the emphasis lies on the actual Neural Network rather than the conversion of interpreted images to vector graphic maps. The new approach deals with image patches rather than pixels. This document discusses the newly acquired concept with a list of features and the actual implementation details. Also an updated schedule will be presented. 
 
 \chapter{Concept}
-Earlier attempts to conceptualise the idea to automate map making resulted in a proposal that too heavily focussed on the actual map creation rather than the classification. For a Neural Network course this was deemed not befitted enough. The plan was also quite far reaching to start with. Thoughts were put into downscaling this ambitious plan. We played around a bit and came up with a new concept which will be discussed in this chapter. Firstly, an impression is given how the end user interacts with our system. This will lay the groundwork for how the Neural Network will be constructed. Secondly through the principles of MoSCoW a flexible requirements list is established. Actual talk about the classification is done it the subsequent chapter.
+Earlier attempts to conceptualise the idea to automate map making resulted in a proposal that too heavily focussed on the actual map creation rather than the classification. For a Neural Network course this was deemed not befitting enough. The plan was also quite far reaching to start with. Thoughts were put into downscaling this ambitious plan. We played around a bit and came up with a new concept which will be discussed in this chapter. Firstly, an impression is given how the end user interacts with our system. This will lay the groundwork for how the Neural Network will be constructed. Secondly through the principles of MoSCoW a flexible requirements list is established. Actual talk about the classification is done in the subsequent chapter.
 
 \section{Impression}
 
@@ -100,16 +100,25 @@ Below in figure \ref{fig:impression} an impression is given of what the end user
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{interface.jpg}
-    \caption{Impression of what the user interacts with.}
+    \includegraphics[width=0.8\textwidth]{impression.jpg}
+    \caption{Impression of what the user interacts with and a possible outcome.}
 	\label{fig:impression}
 \end{figure}
 \noindent
-The most notable attention grabber is the satellite image. This image will be acquired through a random call from a homogenous satellite image database on every new instantiation of the system. Another possibility might be the use of map search over the same database, and as such a search box is being displayed.\\
+The most notable attention grabber is the satellite image. This image will be acquired through a random call from a homogenous satellite image database on every new instantiation of the system. Another possibility to acquire new data is by clicking on the 'New image' button.
+
+Right of the satellite image one can see labels (Forest, City, Water) which correspond with the labels which are outputs of the classification. 
+
+Results obtained from our algorithm, given the current satellite image as input, are graphically feed back to the user. The impression above does that by showing a correspondence between image patches and their respective label via color coding laid over the satellite image. This rendition just shows a few islands of resulsts as an example. Normally the entire image will have such arching (which will be a lot more subtle).\\
 \\
-On the right one can see labels (Forest, City, Water) which correspond with the labels which are outputs of the classification. Since the output of our algorithm is continuous over a range of $0$ to $1$, normalised sliders are introduced to correspond to that particular result.\\
-\\
-Results obtained from our algorithm, given the current satellite image as input, are graphically feed back to the user. The impression above does that by showing a correspondence between image patches and their respective label via color coding laid over the satellite image. 
+Figure \ref{fig:grid} shows how it works internally. Two grids are maintained. One with patches the size of 25 by 25 pixels. The other by the size of 50 by 50 pixels. The latter is actually fed to the Neural Network from which will be decided for that patch the percentage of type of label it contains.  Four 50 by 50 pixels will be grouped together to create a square. In the middle the 25 by 25 pixels patch is placed. This patch will eventually be coloured on the satellite image to indicate the type of label. To decide that, a weighted majority vote of the four 50 by 50 pixels surrounding that smaller patch is computed. Like a convolution filter this construction is shifted over the satellite image as to decide for every area on it. As one can imagine, 25 pixels at the borders are omitted. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[scale=0.6]{grid.jpg}
+    \caption{Grid structure which facilitates the algorithm.}
+	\label{fig:grid}
+\end{figure}
 
 \section{MoSCoW}
 Since a limited amount of time is available and we thought of quite some experiments and features that could be added, we used the MoSCoW method to get our priorities straight and focus on the most important requirements. MoSCow stands for \textit{Must have}, \textit{Should have}, \textit{Could have} and \textit{Would have}. All the requirements are labeled in these four classes.\\
