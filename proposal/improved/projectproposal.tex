@@ -160,7 +160,12 @@ These requirements are implemented only in the most ideal situation. They are co
 
 \section{Dataset}
 
-\section{CNN}
+\section{Convolutional Neural Network}
+When we sat down and thought about the network architecture, we had to keep in mind the complexity of the network. Dealing with satellite imagery meant dealing with a large amount of data per image. In turn, this meant a large amount of connections between the input from the image data to the hidden layer, which leads to a large amount of parameters to tweak.
+During our research phase, we encountered a variety of papers that touched on this subject. Most of these papers have one thing in common, which is their use of convolutional neural networks (CNN). Using convolution operations on small regions of the image, the previous problem could be avoided. Another advantage of using CNN is the ability to take into account correlations of neighboring input data, which are plentiful in satellite images. CNN also makes use of the principle of weight sharing in convolutional layers, which further reduces the amount of free parameters.
+
+\subsection{LeNet-1}
+One of the biggest advantages of using CNN, and especially LeCun's LeNet-1 implementation, is the incorporation of backpropagation learning. This meant that all the weights of the layers were adjusted iteratively, eliminating the need to manually create the convolution masks.
 
 \chapter{Schedule}
 
