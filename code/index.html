@@ -11,25 +11,29 @@
 		<link rel="stylesheet" href="jquery-ui-1.11.2/jquery-ui.min.css" type="text/css">
 		<script src="bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
 		<script src="jquery-ui-1.11.2/jquery-ui.min.js"></script>
-		<script src="http://maps.googleapis.com/maps/api/js"></script>
+		<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
 		<script>
-		var mapProp;
-		var map;
-			function initialize() {
-				mapProp = {
-					center:new google.maps.LatLng(51.508742,-0.120850),
-					zoom:13,
-					mapTypeId: google.maps.MapTypeId.HYBRID,
-					disableDefaultUI:true,
-					zoomControl:false,
-					elementType: "labels",
-					stylers: [
-						{ visibility: "off" }
-					]
-				};
-				map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-			};
-			google.maps.event.addDomListener(window, 'load', initialize);
+			var map = null;
+				        
+			function getMap() {
+				map = new Microsoft.Maps.Map(document.getElementById('map_id'), 
+			  	{
+			  		credentials: 'AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS',
+			  		width: 816, height: 528,
+			  		enableClickableLogo: false,
+			  		enableSearchLogo: false,
+			  		showDashboard: false,
+			  		showMapTypeSelector:false,
+			  		disableZooming: true,
+			  		showScalebar: false,
+			  		disablePanning: true,
+			  		// 100m zoom
+			  		zoom: 16, 
+			  		mapTypeId: Microsoft.Maps.MapTypeId.aerial,
+			  		center: new Microsoft.Maps.Location(52.96951215515596, 5.9170584563831286),
+			  		labelOverlay: Microsoft.Maps.LabelOverlay.hidden
+			  	});
+			}   
 		</script>
 	
 		<style>
@@ -42,9 +46,9 @@
 				float: left;
 				z-index: 1;
 			}
-			#googleMap {
-				width : 800px;
-				height : 500px;
+			#map_id {
+				width : 816px;
+				height : 528px;
 				z-index:2;
 			}
 			#map-hiders {
@@ -61,7 +65,7 @@
 				position: absolute;
 				margin-left: 50px;
 				margin-top:475px;
-				width:800px;
+				width:816px;
 				height:25px;
 				background-color: white;
 				z-index:4;
@@ -112,10 +116,10 @@
 
 	</head>
 
-	<body>
+	<body onload="getMap();">
 		<div id="header" class="title">Random Satellite View</div>
 		<div id="container">
-			<div id="googleMap"></div>
+			<div id="map_id"></div>
 			<div id="map-hiders">
 				<div id="gmapscontrolremover-bottom"></div>
 			</div>
@@ -123,68 +127,22 @@
 				<div id="randombutton">
 					<button type="button">new image</button>
 				</div>
-				<div id="controls">
-					<div class="control-title">Categories</div>
-					<div class="control">
-						<div class"control-legend">A</div>
-						<div class"control-slider">
-							<div id="sliderA"></div>
-						</div>
-					</div>
-					<div class="control">
-						<div class"control-legend">B</div>
-						<div class"control-slider">
-							<div id="sliderB"></div>
-						</div>
-					</div>
-					<div class="control">
-						<div class"control-legend">C</div>
-						<div class"control-slider">
-							<div id="sliderC"></div>
-						</div>
-					</div>
-					<div class="control">
-						<div id="randombutton">
-							<button type="button">classify!</button>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 
 		<script>
 			$("#randombutton").click(function() {
-				var let = 1;
-				var lon = 1;
-	  			map.setCenter(new google.maps.LatLng(33.508742,-0.520850));
+				// Manually found bounding box locations
+				var minLat = 52.298379183128596;
+				var maxLat = 52.43520441347777;
+				var minLong = 4.764510040406664;
+				var maxLong = 4.942471264136956;
+
+				var randomLat = Math.random() * (maxLat - minLat) + minLat;
+				var randomLong = Math.random() * (maxLong - minLong) + minLong;
+				
+				map.setView({ zoom: 16, center: new Microsoft.Maps.Location(randomLat, randomLong) })
 			});
-			$("#sliderA").slider({
-	         	value: 50,
-	          	min: 0,
-	          	max: 100,
-	          	step: 1,
-	          	slide: function( event, ui ) {
-	            	val = ui.value;
-		        }
-		    });
-		    $("#sliderB").slider({
-	         	value: 50,
-	          	min: 0,
-	          	max: 100,
-	          	step: 1,
-	          	slide: function( event, ui ) {
-	            	val = ui.value;
-		        }
-		    });
-		    $("#sliderC").slider({
-	         	value: 50,
-	          	min: 0,
-	          	max: 100,
-	          	step: 1,
-	          	slide: function( event, ui ) {
-	            	val = ui.value;
-		        }
-		    });
 		</script>
 	</body>
 
