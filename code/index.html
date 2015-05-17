@@ -14,26 +14,88 @@
 		<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
 		<script>
 			var map = null;
-				        
+			var mapinfo;
+						
 			function getMap() {
 				map = new Microsoft.Maps.Map(document.getElementById('map_id'), 
-			  	{
-			  		credentials: 'AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS',
-			  		width: 816, height: 528,
-			  		enableClickableLogo: false,
-			  		enableSearchLogo: false,
-			  		showDashboard: false,
-			  		showMapTypeSelector:false,
-			  		disableZooming: true,
-			  		showScalebar: false,
-			  		disablePanning: true,
-			  		// 100m zoom
-			  		zoom: 16, 
-			  		mapTypeId: Microsoft.Maps.MapTypeId.aerial,
-			  		center: new Microsoft.Maps.Location(52.96951215515596, 5.9170584563831286),
-			  		labelOverlay: Microsoft.Maps.LabelOverlay.hidden
-			  	});
-			}   
+				{
+					credentials: 'AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS',
+					width: 816, height: 528,
+					enableClickableLogo: false,
+					enableSearchLogo: false,
+					showDashboard: false,
+					showMapTypeSelector:false,
+					disableZooming: true,
+					showScalebar: false,
+					disablePanning: true,
+					// 100m zoom
+					zoom: 16, 
+					mapTypeId: Microsoft.Maps.MapTypeId.aerial,
+					center: new Microsoft.Maps.Location(52.298379183128596, 4.942471264136956),
+					labelOverlay: Microsoft.Maps.LabelOverlay.hidden
+				});
+			}
+
+			function clickRandom() {
+				// Manually found bounding box locations
+				var minLat = 52.298379183128596;
+				var maxLat = 52.43520441347777;
+				var minLong = 4.764510040406664;
+				var maxLong = 4.942471264136956;
+
+				var randomLat = Math.random() * (maxLat - minLat) + minLat;
+				var randomLong = Math.random() * (maxLong - minLong) + minLong;
+				
+				map.setView({ zoom: 16, center: new Microsoft.Maps.Location(randomLat, randomLong) })
+				console.log(randomLat + ", " + randomLong);
+
+				map.getCredentials(makeLocationRequest);
+			}
+
+			function clickGetImage(credentials) {
+				map.getCredentials(makeImageRequest);
+			}
+
+			function makeImageRequest(credentials) {
+				var lat = map.getCenter().latitude;
+				var lon = map.getCenter().longitude;
+				var link = "http://dev.virtualearth.net/REST/v1/Imagery/Map/Aerial/"+lat+","+lon+"/16?mapSize=816,528&key=" + credentials;
+				callRestService(link, imageCallback);
+			}
+
+			function imageCallback(result) {
+				console.log('asdf');
+			}
+
+			function clickLocationInfo(credentials) {
+				map.getCredentials(makeLocationRequest);
+			}
+
+			function makeLocationRequest(credentials) {
+				var lat = map.getCenter().latitude;
+				var lon = map.getCenter().longitude;
+				var link = "http://dev.virtualearth.net/REST/v1/Locations/"+lat+","+lon+"?o=json&key=" + credentials;
+				callRestService(link, locationCallback);
+			}
+
+			function callRestService(request, callback) {
+			    $.ajax({
+			        url: request,
+			        dataType: "jsonp",
+			        jsonp: "jsonp",
+			        success: function (r) {
+			            callback(r);
+			        },
+			        error: function (e) {
+			            alert(e.statusText);
+			        }
+			    });
+			}
+
+			function locationCallback(result) {
+				$("#location_name").text("Location: " + result.resourceSets[0].resources[0].name);
+			}
+
 		</script>
 	
 		<style>
@@ -100,17 +162,14 @@
 			#randombutton {
 				text-align: center;
 			}
-			#classifybutton {
+			#getimagebutton {
 				text-align: center;
 			}
-			#sliderA {
-				width:150px;
+			#getlocationinfo {
+				text-align: center;
 			}
-			#sliderB {
-				width:150px;
-			}
-			#sliderC {
-				width:150px;
+			#classifybutton {
+				text-align: center;
 			}
 		</style>
 
@@ -123,27 +182,19 @@
 			<div id="map-hiders">
 				<div id="gmapscontrolremover-bottom"></div>
 			</div>
+			<div id="location_name">Location: </div>
 			<div id="interaction">
 				<div id="randombutton">
-					<button type="button">new image</button>
+					<button type="button" onclick="clickRandom()">new image</button>
+				</div>
+				<div id="getimagebutton">
+					<button type="button" onclick="clickGetImage()">get image link</button>
+				</div>
+				<div id="getlocationinfo">
+					<button type="button" onclick="clickLocationInfo()">get location info</button>
 				</div>
 			</div>
 		</div>
-
-		<script>
-			$("#randombutton").click(function() {
-				// Manually found bounding box locations
-				var minLat = 52.298379183128596;
-				var maxLat = 52.43520441347777;
-				var minLong = 4.764510040406664;
-				var maxLong = 4.942471264136956;
-
-				var randomLat = Math.random() * (maxLat - minLat) + minLat;
-				var randomLong = Math.random() * (maxLong - minLong) + minLong;
-				
-				map.setView({ zoom: 16, center: new Microsoft.Maps.Location(randomLat, randomLong) })
-			});
-		</script>
 	</body>
 
 </html>
