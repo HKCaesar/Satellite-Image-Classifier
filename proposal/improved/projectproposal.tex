@@ -157,9 +157,24 @@ These requirements are implemented only in the most ideal situation. They are co
 \end{itemize}
 
 \chapter{Implementation}
+A plan has been established what kind of application should come about. The previous discussion pressed for a certain kind of structure. One where a Neural Network is central to the problem to be solved. But also a frontend is needed for certain user interaction as well as an infrastructure in the backend which facilitates the communication with said frontend. This chapter discusses these aspects.
+
+\section{Frontend and Backend}
+The impression given above in figure \ref{fig:impression} is close to what the end result should look like (although it only displays a certain state). Yet an entire infrastructure outside of the Neural Network is needed to facilitate the application. Below in figure \ref{fig:communication} an infrastructure is visualised via the communication of the two entities.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[scale=0.5]{communication.jpg}
+    \caption{Communication visualization between frontend and backend.}
+	\label{fig:communication}
+\end{figure}
+\noindent
+First, at the frontend, an image is acquired by the user from a database call. The image is immediately send to the backend. There, patches are extracted according to a certain protocol (specific size and sequence). The patches are classified by our Neural Network. Send back to the frontend are the results in a list according to the sequence defined by the protocol. Also a codification of the results is part of the protocol. Back at the frontend the image is made into a grid which corresponds to the size of the protocol. According to the results of the Neural Network these grid windows are coloured.
 
 \section{Dataset}
-\textbf{HALLO KAN IEMAND HIER IETS TYPEN? :D}
+The image which is being acquired every time comes from the Bing Maps database. A predefined size of the map with satellite view enabled, the labels turned off, no other controls or logos visible and where the hight is 100 meters is put in the frontend.  Randomly a location inside the Netherlands is generated. Now the actual image is taken from the map.
+
+For training, satellite images from the same source and practice mentioned above are drawn on a per category/label basis. Patches are acquired code-wise over those images so that for each patch it is known what category/label belongs to it.
 
 \section{Convolutional Neural Network}
 When we sat down and thought about the network architecture, we had to keep in mind the complexity of the network. Dealing with satellite imagery meant dealing with a large amount of data per image. In turn, this meant a large amount of connections between the input from the image data to the hidden layer, which leads to a large amount of parameters to tweak.
@@ -186,21 +201,23 @@ Currently we are experimenting with input patches of 50x50 pixels. The layer H1 
   \begin{tabular}{| l | p{5cm}| p{5cm} | r | }
     \hline
     \textbf{Week} & \textbf{Description of work} & \textbf{Deadline} & \textbf{Labour (hours)} \\ \hline \hline
-	20 & \begin{itemize} \vspace{-1.75em} \item Implement backpropagation \vspace{-1em}
+	20 & \begin{itemize} \vspace{-1.75em} \item Implement backpropagation output layer\vspace{-1em}
 	\item Start examining how to take into account RGB values \vspace{-1em}
 	\item Train on more pictures and examine performance on  other classes like city and water \vspace{-1em}
+	\item Start developing frontend/ backend architecture
 	\end{itemize}
 	& Finish updated proposal & 40 					\\	\hline	
-	21 &  \begin{itemize} \vspace{-1.75em} \item Start developing frontend/ backend architecture  \vspace{-1em}
-	\item  lala check check lala
+	21 &  \begin{itemize} \vspace{-1.75em} \item Work on implementing communication protocol\vspace{-1em}
+	\item Experiments with connecting the nodes of the different layers of the Neural Networks \vspace{-1em}
 	\end{itemize}
-	  & Finish backpropagation & 40 					\\	\hline
+	& Finish backpropagation output layer, and frontend implementation of the communication protocol& 40 					\\	\hline
 	22 & \begin{itemize} \vspace{-1.75em}
 	\item In-between overall evaluation \vspace{-1em}
-	\item Make a new planning which adjustments to implement \vspace{-1em}
+	\item Backend and frontend implementation\vspace{-1em}
 	\item Experiment with preprocessed images (noise reduction) \vspace{-1em}
-	\end{itemize} & Finish model with complete RGB values and the frontend/backend architecture must be completely thought over & 40 					\\  \hline
-	23 & Start report writing and implement last adjustments & - & 40 	\\	\hline
+	\item Implement backpropagation further, until layer H3, see Figure \ref{fig:Architecture} \vspace{-1em}
+	\end{itemize} & Finish model with complete RGB values and the frontend/backend architecture must be completely finished & 40 					\\  \hline
+	23 & Start report writing and implement last adjustments & Finished product for demonstration & 40 	\\	\hline
 	24 & Preparation for demo & Demo & 30				\\  \hline
     25 & Project finalization & - & 30 				\\ \hline
     26 & Project finalization & Project report + individual document & 40 \\ \hline
