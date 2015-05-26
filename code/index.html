@@ -6,12 +6,13 @@
 		<meta charset="UTF-8">
 		<title>Neural Networks - Project</title>
 
-		<script src="jquery-2.1.3/jquery-2.1.3.min.js"></script>
-		<link rel="stylesheet" href="bootstrap-3.3.4-dist/css/bootstrap.min.css">
-		<link rel="stylesheet" href="jquery-ui-1.11.2/jquery-ui.min.css" type="text/css">
-		<script src="bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
-		<script src="jquery-ui-1.11.2/jquery-ui.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+		<script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
 		<script>
 			var map = null;
 			var mapinfo;
@@ -60,11 +61,7 @@
 				var lat = map.getCenter().latitude;
 				var lon = map.getCenter().longitude;
 				var link = "http://dev.virtualearth.net/REST/v1/Imagery/Map/Aerial/"+lat+","+lon+"/16?mapSize=816,528&key=" + credentials;
-				callRestService(link, imageCallback);
-			}
-
-			function imageCallback(result) {
-				console.log('asdf');
+				console.log(link);
 			}
 
 			function clickLocationInfo(credentials) {
@@ -95,6 +92,17 @@
 			function locationCallback(result) {
 				$("#location_name").text("Location: " + result.resourceSets[0].resources[0].name);
 			}
+
+			// Establish connection to node server
+			var socket = io.connect('http://localhost:8080');
+
+			// Emit event flag to node server
+			socket.emit('event');
+
+			// Perform action upon receiving reply flag
+			socket.on('reply', function (data) {
+				console.log("Received from Node.js: " + data);
+			});
 
 		</script>
 	
