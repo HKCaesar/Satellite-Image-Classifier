@@ -1,5 +1,5 @@
-var http = require("http");
-var fs = require('fs');
+var express = require("express");
+var path = require("path");
 
 var zerorpc = require("zerorpc");
 var zeroRPCPort = 4242;
@@ -11,21 +11,16 @@ var socketPort = 8080;
 
 var pythonServer = new zerorpc.Client();
 
+// Initialize node.js server
+var nodeServer = express();
+
+nodeServer.use('/', express.static(__dirname))
+
 // Connect to Python server
 pythonServer.connect("tcp://" + serverUrl + ":" + zeroRPCPort);
 
-var nodeServer = http.createServer(function(req, res) {
-	if(req.url == "/index.html" || req.url == "/") {
-
-		fs.readFile("index.html", function(err, text){
-			res.setHeader("Content-Type", "text/html");
-			res.end(text);
-		});
-
-		return;
-	}
-
-	res.setHeader("Content-Type", "text/html");
+nodeServer.get('/', function(req, res) {
+	res.sendFile(path.join(__dirname + '/index.html'));
 });
 
 var socketIo = require('socket.io').listen(socketPort); 
@@ -53,4 +48,4 @@ socketIo.sockets.on('connection', function (socket) {
 });
 
 console.log("Starting web server at " + serverUrl + ":" + nodePort);
-nodeServer.listen(nodePort, serverUrl);
+nodeServer.listen(nodePort);

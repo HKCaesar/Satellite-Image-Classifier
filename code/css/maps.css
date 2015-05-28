@@ -1,0 +1,72 @@
+#container {
+	position: absolute;
+	margin-left: 80px;
+	margin-top:80px;
+	width : 1200px;
+	height : 500px;
+	float: left;
+	z-index: 1;
+}
+#map_id {
+	width : 816px;
+	height : 528px;
+	z-index:2;
+}
+#map-hiders {
+	position: absolute;
+	margin-left: -50px;
+	margin-top:-500px;
+	z-index: 3;
+}
+#interaction {
+	float: left;
+	width: 800px;
+}
+#gmapscontrolremover-bottom {
+	position: absolute;
+	margin-left: 50px;
+	margin-top:475px;
+	width:816px;
+	height:25px;
+	background-color: white;
+	z-index:4;
+}
+#header {
+	position: absolute;
+	margin-left: 80px;
+	margin-top: 30px;
+	height:50px;
+	z-index: 5;
+}
+.title {
+	font-size: 25px;
+}
+.control-title {
+	margin-left:10px;
+	margin-top:10px;
+	font-size: 18px;
+}
+.control {
+	margin-left:10px;
+	margin-top:10px;
+}
+.control-legend {
+	width: 30px;
+	font-size: 14px;
+	float: left;
+}
+.control-slider {
+	margin-left:10px;
+}
+#randombutton {
+	text-align: center;
+}
+#getimagebutton {
+	text-align: center;
+}
+#getlocationinfo {
+	text-align: center;
+}
+#classifybutton {
+	text-align: center;
+}
