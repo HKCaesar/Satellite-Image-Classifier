@@ -9,10 +9,13 @@ var serverUrl = "127.0.0.1";
 
 var socketPort = 8080;
 
-var client = new zerorpc.Client();
+var pythonServer = new zerorpc.Client();
+
+// Connect to Python server
+pythonServer.connect("tcp://" + serverUrl + ":" + zeroRPCPort);
 
 var nodeServer = http.createServer(function(req, res) {
-	if(req.url == "/index.html") {
+	if(req.url == "/index.html" || req.url == "/") {
 
 		fs.readFile("index.html", function(err, text){
 			res.setHeader("Content-Type", "text/html");
@@ -31,12 +34,9 @@ socketIo.sockets.on('connection', function (socket) {
 	// Wait for the event raised by the web client
 	socket.on('event', function (data) {  
 
-		// Connect to Python server
-		client.connect("tcp://" + serverUrl + ":" + zeroRPCPort);
-
 		// Calls the method on the Python server
-		client.invoke("hello", "Tung", function(error, reply, streaming) {
-			if(error){
+		pythonServer.invoke("hello", "Tung", function(error, reply, streaming) {
+			if(error) {
 				console.log("ERROR: ", error);
 			}
 
@@ -45,6 +45,10 @@ socketIo.sockets.on('connection', function (socket) {
 			// Emit reply flag to web client
 			socket.emit('reply', reply);
 		});
+	});
+
+	socket.on('location', function (data) {
+		pythonServer.invoke("location", data);
 	});
 });
 

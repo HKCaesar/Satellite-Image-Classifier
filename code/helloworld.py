@@ -1,13 +1,16 @@
 import zerorpc
 
 class HelloRPC(object):
-    '''pass the method a name, it replies "Hello name!"'''
-    def hello(self, name):
-        return "Hello, {0}!".format(name)
+	'''pass the method a name, it replies "Hello name!"'''
+	def hello(self, name):
+		return "Hello, {0}!".format(name)
+
+	def location(self, location):
+		print location
 
 def main():
-    s = zerorpc.Server(HelloRPC())
-    s.bind("tcp://*:4242")
-    s.run()
+	s = zerorpc.Server(HelloRPC())
+	s.bind("tcp://*:4242")
+	s.run()
 
 if __name__ == "__main__" : main()

@@ -16,6 +16,9 @@
 		<script>
 			var map = null;
 			var mapinfo;
+
+			// Establish connection to node server
+			var socket = io.connect('http://localhost:8080');
 						
 			function getMap() {
 				map = new Microsoft.Maps.Map(document.getElementById('map_id'), 
@@ -47,10 +50,10 @@
 				var randomLat = Math.random() * (maxLat - minLat) + minLat;
 				var randomLong = Math.random() * (maxLong - minLong) + minLong;
 				
-				map.setView({ zoom: 16, center: new Microsoft.Maps.Location(randomLat, randomLong) })
+				map.setView({ zoom: 16, center: new Microsoft.Maps.Location(randomLat, randomLong) });
 				console.log(randomLat + ", " + randomLong);
 
-				map.getCredentials(makeLocationRequest);
+				clickLocationInfo();
 			}
 
 			function clickGetImage(credentials) {
@@ -90,11 +93,14 @@
 			}
 
 			function locationCallback(result) {
-				$("#location_name").text("Location: " + result.resourceSets[0].resources[0].name);
-			}
+				if (typeof result.resourceSets[0].resources[0] !== 'undefined') {
+					var location = result.resourceSets[0].resources[0].name;
 
-			// Establish connection to node server
-			var socket = io.connect('http://localhost:8080');
+					$("#location_name").text("Location: " + location);
+					socket.emit('location', location)
+				}
+			}	
+
 
 			// Emit event flag to node server
 			socket.emit('event');
