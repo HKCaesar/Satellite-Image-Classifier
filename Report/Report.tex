@@ -196,16 +196,18 @@ One of the biggest advantages of using CNN, and especially LeCun's LeNet-1 imple
 
 \chapter{Results and Discussion}
 In the first phase of our research we made a convolutional neural network based on LeNet-1. We experimented with different convolution kernels in the first layer (H1) of the network and differed the amount of branches in the third layer (H3). We started with manually chosen convolution kernels for both layers H1 and H3. We began with input patches of 50 x 50 followed by a convolution kernel of 5x5 resulting in a feature map of dimensions 46x46. Next, sub-sampling with a dimension reduction of 2 results in a feature map of dimension 23x23. Again we did different 4x4 convolution kernel operation creating branches in H3 resulting in 20x20 feature maps. Sub-sampling with a dimension reduction of 5 resulted in an 4x4 output map. These outputmaps are then connected to two diffent classifcation neurons for Forest and City. \\\\
-We used the Sigmoid function as activation function for our classifaction-neurons and performed back-propagation on the weights connecting the output maps with the classification neurons and biases. The first functioning results where found with 4 feature maps in H1 and 2 feature maps in H3 each. We used the convolution kernels shown in figure \ref{fig:firstFilters}. The Network was trained on structure only so no color feautures were included.
+We used the Sigmoid function as activation function for our classifaction-neurons and performed back-propagation on the weights connecting the output maps with the classification neurons and biases. The first functioning results where found with 4 feature maps in H1 and 2 feature maps in H3 each. We used the convolution kernels shown in figure \ref{fig:firstFilters}. The Network was trained on structure only so no color feautures were included. 
 
 \begin{figure}[bth!]
 	\centering
 	\includegraphics[width=0.5\textwidth]{./images/firstFilters.png}
 	\caption{The four filters used in the first stage where the CNN was able to distinguish forest and city.}
 	\label{fig:firstFilters}
-\end{figure}
+\end{figure} 
 
-In the second phase we tried to extend our classes with \textit{water}.
+In the second phase we tried to extend our classes with the class \textit{water}. We tried to investigate whether training only the last weights and biases were sufficient to train the network to classify three classes. During this phase we made some adjustment to the network. We realised that the last sub-sampling with a dimension reduction of a factor 5 would probably lead to less accuracy by the network since more information might be lost in this reduction. Although, we did no quantitative research on this hypothesis the underlaying reasoning is that in each layer of the network more generalizations are made by the network which should represent the information of your input patch. When you downsize the feature maps at the end of the network this more contained information will be lost in this sub-sampling compared with sub-sampling earlies in the network. Therefore we introduced a slightly different CNN. Now, the inputsize of the patches is 41x41. This is convolved with a 9x9 convolution kernel resulting in a 33x33 feature map. Now sub-sampling with a factor 3 is introduced reducing it to a 11x11 feature map. From this map we can branch off (H3) with a convolution operation with a 4x4 convolution kernel resulting in a 8x8 feature map. This last map is than sub-sampled with a reduction of 2 resulting in the output map of 4x4. In this way we presume that the network makes better generalization than the earlier network. 
+\\\\
+Also, in this new architecture the first convolution kernels are increased in dimension. This adjustment has been introduced due to a problem with respect to the classes \textit{forest} and \textit{water}. In turns out that these two classes are very similar in structure (see figure \ref{fig:WaterForestPatch} ). Conceivably, for the network it becomes hard to distinguish these classes because of their similarities. Therefore we increased the size of the first convolution kernels. In this way more context per pixel is included leading to larger differences in feature maps between these classes.    
 
 
 \begin{figure}[bth!]
