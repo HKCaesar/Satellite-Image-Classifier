@@ -153,7 +153,7 @@
 				var leftTopX = parseInt($('#container').css('margin-left'));
 				var leftTopY = parseInt($('#container').css('margin-top'));
 
-				for(i = 0; i < heightSteps; i++) {
+				for(i = 0; i < heightSteps-1; i++) {
 					for(j = 0; j < widthSteps; j++) {
 						var x = j * patchDimHalf + leftTopX;
 						var y = i * patchDimHalf + leftTopY;
@@ -169,7 +169,7 @@
 			}
 
 			function renderDiv(x, y,color) {
-				var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).css('background-color',color);
+				var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).css('border-color',color);
 				$('body').append(div);
 			}
 
@@ -250,10 +250,11 @@
 			}
 
 			.labelClass {
-				width : 24px;
-				height: 24px;
+				width : 23px;
+				height: 23px;
+				border-style: solid;
+				border-width: 1px;
 				position: absolute;
-				opacity: 0.5;
 				z-index: 1000;
 			}
 		</style>
