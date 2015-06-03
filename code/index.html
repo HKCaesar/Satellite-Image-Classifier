@@ -15,6 +15,248 @@
 		<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
 		<script src="js/maps.js"></script>
+		<script>
+			var map = null;
+			var mapinfo;
+			var mapWidth = 816;
+			var mapHeight = 528;
+			var patchDim = 48;
+			var labels = [0,1,2];
+			var label2Color = {
+				0 : 'red',
+				1 : 'blue',
+				2 : 'yellow'
+			}
+						
+			function getMap() {
+				map = new Microsoft.Maps.Map(document.getElementById('map_id'), 
+				{
+					credentials: 'AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS',
+					width: mapWidth, height: mapHeight,
+					enableClickableLogo: false,
+					enableSearchLogo: false,
+					showDashboard: false,
+					showMapTypeSelector:false,
+					disableZooming: true,
+					showScalebar: false,
+					disablePanning: true,
+					// 100m zoom
+					zoom: 16, 
+					mapTypeId: Microsoft.Maps.MapTypeId.aerial,
+					center: new Microsoft.Maps.Location(52.298379183128596, 4.942471264136956),
+					labelOverlay: Microsoft.Maps.LabelOverlay.hidden
+				});
+			}
+
+			function clickRandom() {
+				// Manually found bounding box locations
+				var minLat = 52.298379183128596;
+				var maxLat = 52.43520441347777;
+				var minLong = 4.764510040406664;
+				var maxLong = 4.942471264136956;
+
+				var randomLat = Math.random() * (maxLat - minLat) + minLat;
+				var randomLong = Math.random() * (maxLong - minLong) + minLong;
+				
+				map.setView({ zoom: 16, center: new Microsoft.Maps.Location(randomLat, randomLong) })
+				console.log(randomLat + ", " + randomLong);
+
+				map.getCredentials(makeLocationRequest);
+			}
+
+			function clickGetImage(credentials) {
+				map.getCredentials(makeImageRequest);
+			}
+
+			function makeImageRequest(credentials) {
+				var lat = map.getCenter().latitude;
+				var lon = map.getCenter().longitude;
+				var link = "http://dev.virtualearth.net/REST/v1/Imagery/Map/Aerial/"+lat+","+lon+"/16?mapSize=" + mapWidth + "," + mapHeight +"&key=" + credentials;
+				callRestService(link, imageCallback);
+			}
+
+			function imageCallback(result) {
+				console.log('asdf');
+			}
+
+			function clickLocationInfo(credentials) {
+				map.getCredentials(makeLocationRequest);
+			}
+
+			function makeLocationRequest(credentials) {
+				var lat = map.getCenter().latitude;
+				var lon = map.getCenter().longitude;
+				var link = "http://dev.virtualearth.net/REST/v1/Locations/"+lat+","+lon+"?o=json&key=" + credentials;
+				callRestService(link, locationCallback);
+			}
+
+			function callRestService(request, callback) {
+			    $.ajax({
+			        url: request,
+			        dataType: "jsonp",
+			        jsonp: "jsonp",
+			        success: function (r) {
+			            callback(r);
+			        },
+			        error: function (e) {
+			            alert(e.statusText);
+			        }
+			    });
+			}
+
+			function locationCallback(result) {
+				$("#location_name").text("Location: " + result.resourceSets[0].resources[0].name);
+			}
+
+			function generateTestSet() {
+				var testReturnProtocol = "" + mapWidth + "," + mapHeight + "," + patchDim;
+				var steps = mapWidth*mapHeight/((patchDim/2)*(patchDim/2));
+				for (i = 0; i < steps; i++) {
+					var randomClass = labels[Math.floor(Math.random() * labels.length)];
+					testReturnProtocol = testReturnProtocol + "," + randomClass;
+				}
+				return testReturnProtocol;
+			}
+
+			function protocol2Array(protocol) {
+				return protocol.split(",");
+			}
+
+			function extractWidth(array) {
+				var width = array[0];
+				array.shift();
+				return width;
+			}
+
+			function extractHeight(array) {
+				var height = array[0];
+				array.shift();
+				return height;
+			}
+
+			function extractPatchSize(array) {
+				var patchSize = array[0];
+				array.shift();
+				return patchSize;
+			}
+
+			function render(protocol) {
+				var array = protocol2Array(protocol);
+				var width = extractWidth(array);
+				var height = extractHeight(array);
+				var patchDim = extractPatchSize(array);
+
+				var patchDimHalf = patchDim/2;
+				var widthSteps = width/patchDimHalf;
+				var heightSteps = height/patchDimHalf;
+
+				var leftTopX = parseInt($('#container').css('margin-left'));
+				var leftTopY = parseInt($('#container').css('margin-top'));
+
+				for(i = 0; i < heightSteps; i++) {
+					for(j = 0; j < widthSteps; j++) {
+						var x = j * patchDimHalf + leftTopX;
+						var y = i * patchDimHalf + leftTopY;
+						renderDiv(x,y,label2Color[extractFirstLabel(array)]);
+					}
+				}
+			}
+
+			function extractFirstLabel(array) {
+				var label = array[0];
+				array.shift();
+				return label;
+			}
+
+			function renderDiv(x, y,color) {
+				var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).css('background-color',color);
+				$('body').append(div);
+			}
+
+		</script>
+	
+		<style>
+			#container {
+				position: absolute;
+				margin-left: 80px;
+				margin-top:80px;
+				width : 1200px;
+				height : 500px;
+				float: left;
+				z-index: 1;
+			}
+			#map_id {
+				width : 816px;
+				height : 528px;
+				z-index:2;
+			}
+			#map-hiders {
+				position: absolute;
+				margin-left: -50px;
+				margin-top:-500px;
+				z-index: 3;
+			}
+			#interaction {
+				float: left;
+				width: 800px;
+			}
+			#gmapscontrolremover-bottom {
+				position: absolute;
+				margin-left: 50px;
+				margin-top:475px;
+				width:816px;
+				height:25px;
+				background-color: white;
+				z-index:4;
+			}
+			#header {
+				position: absolute;
+				margin-left: 80px;
+				margin-top: 30px;
+				height:50px;
+				z-index: 5;
+			}
+			.title {
+				font-size: 25px;
+			}
+			.control-title {
+				margin-left:10px;
+				margin-top:10px;
+				font-size: 18px;
+			}
+			.control {
+				margin-left:10px;
+				margin-top:10px;
+			}
+			.control-legend {
+				width: 30px;
+				font-size: 14px;
+				float: left;
+			}
+			.control-slider {
+				margin-left:10px;
+			}
+			#randombutton {
+				text-align: center;
+			}
+			#getimagebutton {
+				text-align: center;
+			}
+			#getlocationinfo {
+				text-align: center;
+			}
+			#classifybutton {
+				text-align: center;
+			}
+
+			.labelClass {
+				width : 24px;
+				height: 24px;
+				position: absolute;
+				opacity: 0.5;
+				z-index: 1000;
+			}
+		</style>
 	</head>
 
 	<body onload="getMap();">
