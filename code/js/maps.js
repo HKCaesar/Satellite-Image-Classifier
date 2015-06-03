@@ -1,14 +1,30 @@
 var map = null;
 var mapinfo;
-
+var mapWidth = 816;
+var mapHeight = 528;
+var patchDim = 48;
+var labels = [0,1,2];
+var label2Color = {
+	0 : 'red',
+	1 : 'blue',
+	2 : 'yellow'
+}
 // Establish connection to node server
 var socket = io.connect('http://localhost:8080');
+
+// Emit event flag to node server
+socket.emit('event');
+
+// Perform action upon receiving reply flag
+socket.on('reply', function (data) {
+	console.log("Received from Node.js: " + data);
+});
 			
 function getMap() {
 	map = new Microsoft.Maps.Map(document.getElementById('map_id'), 
 	{
 		credentials: 'AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS',
-		width: 816, height: 528,
+		width: mapWidth, height: mapHeight,
 		enableClickableLogo: false,
 		enableSearchLogo: false,
 		showDashboard: false,
@@ -47,7 +63,7 @@ function clickGetImage(credentials) {
 function makeImageRequest(credentials) {
 	var lat = map.getCenter().latitude;
 	var lon = map.getCenter().longitude;
-	var link = "http://dev.virtualearth.net/REST/v1/Imagery/Map/Aerial/"+lat+","+lon+"/16?mapSize=816,528&key=" + credentials;
+	var link = "http://dev.virtualearth.net/REST/v1/Imagery/Map/Aerial/"+lat+","+lon+"/16?mapSize=" + mapWidth + "," + mapHeight +"&key=" + credentials;
 	console.log(link);
 }
 
@@ -83,13 +99,69 @@ function locationCallback(result) {
 		$("#location_name").text("Location: " + location);
 		socket.emit('location', location)
 	}
-}	
+}
 
+function generateTestSet() {
+	var testReturnProtocol = "" + mapWidth + "," + mapHeight + "," + patchDim;
+	var steps = mapWidth*mapHeight/((patchDim/2)*(patchDim/2));
+	for (i = 0; i < steps; i++) {
+		var randomClass = labels[Math.floor(Math.random() * labels.length)];
+		testReturnProtocol = testReturnProtocol + "," + randomClass;
+	}
+	return testReturnProtocol;
+}
 
-// Emit event flag to node server
-socket.emit('event');
+function protocol2Array(protocol) {
+	return protocol.split(",");
+}
 
-// Perform action upon receiving reply flag
-socket.on('reply', function (data) {
-	console.log("Received from Node.js: " + data);
-});
+function extractWidth(array) {
+	var width = array[0];
+	array.shift();
+	return width;
+}
+
+function extractHeight(array) {
+	var height = array[0];
+	array.shift();
+	return height;
+}
+
+function extractPatchSize(array) {
+	var patchSize = array[0];
+	array.shift();
+	return patchSize;
+}
+
+function render(protocol) {
+	var array = protocol2Array(protocol);
+	var width = extractWidth(array);
+	var height = extractHeight(array);
+	var patchDim = extractPatchSize(array);
+
+	var patchDimHalf = patchDim/2;
+	var widthSteps = width/patchDimHalf;
+	var heightSteps = height/patchDimHalf;
+
+	var leftTopX = parseInt($('#container').css('margin-left'));
+	var leftTopY = parseInt($('#container').css('margin-top'));
+
+	for(i = 0; i < heightSteps-1; i++) {
+		for(j = 0; j < widthSteps; j++) {
+			var x = j * patchDimHalf + leftTopX;
+			var y = i * patchDimHalf + leftTopY;
+			renderDiv(x,y,label2Color[extractFirstLabel(array)]);
+		}
+	}
+}
+
+function extractFirstLabel(array) {
+	var label = array[0];
+	array.shift();
+	return label;
+}
+
+function renderDiv(x, y,color) {
+	var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).css('border-color',color);
+	$('body').append(div);
+}

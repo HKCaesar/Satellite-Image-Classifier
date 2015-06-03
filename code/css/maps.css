@@ -70,3 +70,12 @@
 #classifybutton {
 	text-align: center;
 }
+
+.labelClass {
+	width : 23px;
+	height: 23px;
+	border-style: solid;
+	border-width: 1px;
+	position: absolute;
+	z-index: 1000;
+}
