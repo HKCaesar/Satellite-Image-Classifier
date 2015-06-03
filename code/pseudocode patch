@@ -1,0 +1,14 @@
+var nrSmallPatch;
+var dimLarge;
+var smallPatchMap -> (x, y);
+var largePatchMap -> (x, y);
+
+parents(2 -> {1, 2, dimLarge.x + 1, dimLarge.x + 2});
+
+array()
+
+for i = 3 to nrSmallPatch
+	prevParents = parents(i-1);
+	parents(i -> {prevParents + 1})
+end
+	
