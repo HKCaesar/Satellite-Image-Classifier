@@ -42,6 +42,10 @@ socketIo.sockets.on('connection', function (socket) {
 		});
 	});
 
+	socket.on('crop', function (data) {
+		pythonServer.invoke('crop_map', data);
+	});
+
 	socket.on('location', function (data) {
 		pythonServer.invoke("location", data);
 	});
