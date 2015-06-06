@@ -64,7 +64,7 @@ function makeImageRequest(credentials) {
 	var lat = map.getCenter().latitude;
 	var lon = map.getCenter().longitude;
 	var link = "http://dev.virtualearth.net/REST/v1/Imagery/Map/Aerial/"+lat+","+lon+"/16?mapSize=" + mapWidth + "," + mapHeight +"&key=" + credentials;
-	socket.emit('crop', link);
+	socket.emit('crop', {link, patchDim});
 }
 
 function clickLocationInfo(credentials) {
