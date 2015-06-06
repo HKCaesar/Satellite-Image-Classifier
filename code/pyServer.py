@@ -46,6 +46,7 @@ class RPC(object):
 
 		for y in range(0, h, smallPatchSize):
 			for x in range(0, w, smallPatchSize):
+				# To compensate for 'half large patches'
 				if (
 					h - y >= largePatchSize and
 					w - x >= largePatchSize
@@ -61,10 +62,16 @@ class RPC(object):
 		parents = {}
 		index = 1
 
+		''' 
+		Starting from the second row, second small patch, because the outer
+		border is ignored. Ends at the second to last row, second to last patch.		
+		'''
 		for i in range(dimSmall['x'] + 2, dimSmall['x']*(dimSmall['y']-1)):
+			# Skip first and last column
 			if (i % dimSmall['x'] > 1):
 				parents[i] = (index, index + 1, dimLarge['x'] + index, dimLarge['x'] + index + 1)
 				index += 1
+			# To compensate for 'half large patches'
 			if (i % dimSmall['x'] == 0):
 				index += 1
 
