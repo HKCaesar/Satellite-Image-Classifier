@@ -13,11 +13,63 @@ class RPC(object):
 	def location(self, location):
 		print location
 
-	def crop_map(self, url):
+	def crop_map(self, url, patchSize):
 		file = cStringIO.StringIO(urllib.urlopen(url).read())
 		img = Image.open(file)
 		w, h = img.size
-		cropped = img.crop((0, 0, w, h-48))
+
+		# Cut off Bing logo
+		cropped = img.crop((0, 0, w, h-patchSize))
+
+		return self.patch_map(cropped, patchSize)
+
+	def patch_map(self, img, patchSize):
+		largePatchSize = patchSize
+
+		# Divide patch in 4 smaller patches
+		smallPatchSize = largePatchSize / 2
+
+		# Pixel width and height of image
+		w, h = img.size
+
+		# Id's of the patches
+		smallPatchId = {}
+		largePatchId = {}
+
+		# Number of patches in x and y dimensions
+		dimSmall = {'x': w / smallPatchSize, 'y': h / smallPatchSize}
+		dimLarge = {'x': w / largePatchSize, 'y': h / largePatchSize}
+
+		################# Map patch id's to (x,y)-coordinates ###################
+		smallIndex = 1
+		largeIndex = 1
+
+		for y in range(0, h, smallPatchSize):
+			for x in range(0, w, smallPatchSize):
+				if (
+					h - y >= largePatchSize and
+					w - x >= largePatchSize
+				):
+					largePatchId[largeIndex] = {'x': x, 'y': y}
+					largeIndex += 1	
+
+				smallPatchId[smallIndex] = {'x': x, 'y': y}
+				smallIndex += 1
+
+
+		######### Map small patch id's to large patch id's as parents ###########
+		parents = {}
+		index = 1
+
+		for i in range(dimSmall['x'] + 2, dimSmall['x']*(dimSmall['y']-1)):
+			if (i % dimSmall['x'] > 1):
+				parents[i] = (index, index + 1, dimLarge['x'] + index, dimLarge['x'] + index + 1)
+				index += 1
+			if (i % dimSmall['x'] == 0):
+				index += 1
+
+		print parents
+		return parents
 
 def main():
 	s = zerorpc.Server(RPC())

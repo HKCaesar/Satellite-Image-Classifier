@@ -43,7 +43,14 @@ socketIo.sockets.on('connection', function (socket) {
 	});
 
 	socket.on('crop', function (data) {
-		pythonServer.invoke('crop_map', data);
+		pythonServer.invoke('crop_map', data.link, data.patchDim, 
+			function(error, reply, streaming) {
+				if(error) {
+					console.log("ERROR: ", error);
+				}
+
+				console.log(reply[645][0]);
+			});
 	});
 
 	socket.on('location', function (data) {
