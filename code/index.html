@@ -16,24 +16,26 @@
 		<script src="js/maps.js"></script>
 	</head>
 
-	<body onload="getMap();">
-		<div id="header" class="title">Random Satellite View</div>
-		<div id="container">
-			<div id="map_id"></div>
-			<div id="map-hiders">
-				<div id="gmapscontrolremover-bottom"></div>
+	<body onload="getMap(); onLoad();">
+		<div id="bigContainer">
+			<div id="container">
+				<div id="header" class="title">Random Satellite View</div>
+				<div id="map_id"></div>
+				<div id="map-hiders">
+					<div id="gmapscontrolremover-bottom"></div>
+				</div>
+				<div id="interaction">
+					<div id="randombutton">
+						<button type="button" onclick="clickRandom()">new image</button>
+					</div>
+				</div>
 			</div>
-			<div id="location_name">Location: </div>
-			<div id="interaction">
-				<div id="randombutton">
-					<button type="button" onclick="clickRandom()">new image</button>
-				</div>
-				<div id="getimagebutton">
-					<button type="button" onclick="clickGetImage()">get image link</button>
-				</div>
-				<div id="getlocationinfo">
-					<button type="button" onclick="clickLocationInfo()">get location info</button>
-				</div>
+			<div id="legend">
+				<div class="legend-title">Classes</div>
+				<div class="legend-item red" onclick="redClick();">Forest</div>
+				<div class="legend-item blue" onclick="blueClick();">City</div>
+				<div class="legend-item yellow" onclick="yellowClick();">Water</div>
+				<div class="legend-item gray" onclick="restore();">all</div>
 			</div>
 		</div>
 	</body>
