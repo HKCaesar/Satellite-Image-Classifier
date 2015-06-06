@@ -18,15 +18,21 @@
 
 	<body onload="getMap(); onLoad();">
 		<div id="bigContainer">
+		<h1>Random Satellite Map Classifier</h1>
 			<div id="container">
-				<div id="header" class="title">Random Satellite View</div>
-				<div id="map_id"></div>
+				<div id="header">
+					<h2></h2>
+				</div>
+				<div id="map_container">
+					<div id="map_id"></div>
+					<div id="grid"></div>
+				</div>
 				<div id="map-hiders">
 					<div id="gmapscontrolremover-bottom"></div>
 				</div>
 				<div id="interaction">
 					<div id="randombutton">
-						<button type="button" onclick="clickRandom()">new image</button>
+						<button class="btn btn-primary btn-lg" type="button" onclick="clickRandom()">New Random </button>
 					</div>
 				</div>
 			</div>

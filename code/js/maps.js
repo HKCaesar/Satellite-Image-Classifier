@@ -104,7 +104,7 @@ function locationCallback(result) {
 	if (typeof result.resourceSets[0].resources[0] !== 'undefined') {
 		var location = result.resourceSets[0].resources[0].name;
 
-		$("#header").text(location);
+		$("#header h2").text(location);
 		socket.emit('location', location)
 	}
 }
@@ -151,13 +151,10 @@ function render(protocol) {
 	var widthSteps = width/patchDimHalf;
 	var heightSteps = height/patchDimHalf;
 
-	var leftTopX = parseInt($('#bigContainer').css('margin-left'));
-	var leftTopY = parseInt($('#bigContainer').css('margin-top')) + parseInt($('#header').css('height'));
-
 	for(i = 0; i < heightSteps-1; i++) {
 		for(j = 0; j < widthSteps; j++) {
-			var x = j * patchDimHalf + leftTopX;
-			var y = i * patchDimHalf + leftTopY;
+			var x = j * patchDimHalf;
+			var y = i * patchDimHalf;
 			renderDiv(x,y,label2Color[extractFirstLabel(array)]);
 		}
 	}
@@ -171,7 +168,7 @@ function extractFirstLabel(array) {
 
 function renderDiv(x, y,color) {
 	var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).addClass('border-' + color);
-	$('body').append(div);
+	$('#grid').append(div);
 }
 
 // Click on divs

@@ -17,9 +17,18 @@
 	float: right;
 }
 #map_id {
+	position: relative;
 	width : 816px;
 	height : 528px;
 	z-index:2;
+}
+#map_container {
+	position: relative;
+}
+#grid {
+	position: absolute;
+	top: 0px;
+	left: 0px;
 }
 #map-hiders {
 	position: absolute;
@@ -43,9 +52,6 @@
 #header {
 	height:50px;
 	z-index: 5;
-}
-.title {
-	font-size: 25px;
 }
 .legend-title {
 	margin-left:10px;
