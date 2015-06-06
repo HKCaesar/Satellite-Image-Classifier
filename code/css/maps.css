@@ -1,11 +1,20 @@
-#container {
+#bigContainer {
 	position: absolute;
 	margin-left: 80px;
-	margin-top:80px;
-	width : 1200px;
-	height : 500px;
-	float: left;
+	margin-top: 80px;
 	z-index: 1;
+}
+#container {
+	width: 850px;
+	float: left;
+}
+#legend {
+	padding-top: 40px;
+	float: left;
+	width: 200px;
+	height : 528px;
+	z-index:2;
+	float: right;
 }
 #map_id {
 	width : 816px;
@@ -32,32 +41,50 @@
 	z-index:4;
 }
 #header {
-	position: absolute;
-	margin-left: 80px;
-	margin-top: 30px;
 	height:50px;
 	z-index: 5;
 }
 .title {
 	font-size: 25px;
 }
-.control-title {
+.legend-title {
 	margin-left:10px;
 	margin-top:10px;
-	font-size: 18px;
+	font-size: 25px;
 }
-.control {
+.legend-item {
 	margin-left:10px;
+	padding-left:10px;
 	margin-top:10px;
+	font-size: 20px;
+	color: white;
 }
-.control-legend {
-	width: 30px;
-	font-size: 14px;
-	float: left;
+.border-red {
+	border-color : red;
 }
-.control-slider {
-	margin-left:10px;
+.border-blue {
+	border-color : blue;
 }
+.border-yellow {
+	border-color : yellow;
+}
+
+.red {
+	background-color: red;
+}
+
+.blue {
+	background-color: blue;
+}
+
+.yellow {
+	background-color: yellow;
+}
+
+.gray {
+	background-color: gray;
+}
+
 #randombutton {
 	text-align: center;
 }
@@ -70,7 +97,6 @@
 #classifybutton {
 	text-align: center;
 }
-
 .labelClass {
 	width : 23px;
 	height: 23px;

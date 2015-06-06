@@ -19,6 +19,12 @@ socket.emit('event');
 socket.on('reply', function (data) {
 	console.log("Received from Node.js: " + data);
 });
+
+function onLoad() {
+	$('.border-red').click(function() { redClick(); });
+	$('.border-blue').click(function() { blueClick(); });
+	$('.border-yellow').click(function() { yellowClick(); });
+}
 			
 function getMap() {
 	map = new Microsoft.Maps.Map(document.getElementById('map_id'), 
@@ -38,6 +44,8 @@ function getMap() {
 		center: new Microsoft.Maps.Location(52.298379183128596, 4.942471264136956),
 		labelOverlay: Microsoft.Maps.LabelOverlay.hidden
 	});
+	clickLocationInfo();
+	render(generateTestSet());
 }
 
 function clickRandom() {
@@ -96,7 +104,7 @@ function locationCallback(result) {
 	if (typeof result.resourceSets[0].resources[0] !== 'undefined') {
 		var location = result.resourceSets[0].resources[0].name;
 
-		$("#location_name").text("Location: " + location);
+		$("#header").text(location);
 		socket.emit('location', location)
 	}
 }
@@ -143,8 +151,8 @@ function render(protocol) {
 	var widthSteps = width/patchDimHalf;
 	var heightSteps = height/patchDimHalf;
 
-	var leftTopX = parseInt($('#container').css('margin-left'));
-	var leftTopY = parseInt($('#container').css('margin-top'));
+	var leftTopX = parseInt($('#bigContainer').css('margin-left'));
+	var leftTopY = parseInt($('#bigContainer').css('margin-top')) + parseInt($('#header').css('height'));
 
 	for(i = 0; i < heightSteps-1; i++) {
 		for(j = 0; j < widthSteps; j++) {
@@ -162,6 +170,33 @@ function extractFirstLabel(array) {
 }
 
 function renderDiv(x, y,color) {
-	var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).css('border-color',color);
+	var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).addClass('border-' + color);
 	$('body').append(div);
 }
+
+// Click on divs
+function restore() {
+	$('.border-red').css('border-color','red');
+	$('.border-blue').css('border-color','blue');
+	$('.border-yellow').css('border-color','yellow');
+}
+
+function redClick() {
+	restore();
+	$('.border-blue').css('border-color','gray');
+	$('.border-yellow').css('border-color','gray');
+}
+
+function blueClick() {
+	restore();
+	$('.border-red').css('border-color','gray');
+	$('.border-yellow').css('border-color','gray');
+}
+
+function yellowClick() {
+	restore();
+	$('.border-blue').css('border-color','gray');
+	$('.border-red').css('border-color','gray');
+}
+
+
