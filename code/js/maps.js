@@ -55,6 +55,7 @@ function getMap() {
 }
 
 function clickRandom() {
+	$('.labelClass').remove();
 	// Manually found bounding box locations
 	var minLat = 52.298379183128596;
 	var maxLat = 52.43520441347777;
@@ -72,7 +73,6 @@ function clickRandom() {
 
 function clickClassify() {
 	var url = makeImageRequest('AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS');
-	console.log(url)
 	socket.emit('classify', {url, patchDim});
 }
 

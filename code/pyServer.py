@@ -13,43 +13,35 @@ from PIL import Image
 import glob
 import matplotlib.cm as cm
 import itertools
+from itertools import product
 
 class RPC(object):
 	'''pass the method a name, it replies "Hello name!"'''
 	def hello(self, name):
 		return "Hello, {0}!".format(name)
 
-	def location(self, location):
-
 	def classify(self, url, patchSize):
-		img = crop_image(url)
+		img = self.crop_image(url, patchSize)
+		w, h = img.size
 
 		smallPatchId, largePatchId, parents = self.patch_map(img, patchSize)
 		patches = self.get_patches(img, patchSize)
 
-		matrix = classifyImage(img, patchSize)
+		matrix = self.classifyImage(img, patchSize)
 
-		serialized_matrix = serializeMatrix(matrix)
+		serialized = self.serialized_matrix(matrix)
 
-		result = np.concatenate([[w, h, patchSize], serializedMatrix])
+		result = np.concatenate([[w, h, patchSize], serialized])
 
 		return result.tolist()
 
-	def crop_image(url):
+	def crop_image(self, url, patchSize):
 		file = cStringIO.StringIO(urllib.urlopen(url).read())
 		img = Image.open(file)
 		w, h = img.size
 		
 		# Cut off Bing logo
-		result img.crop((0, 0, w, h-patchSize))
-
-	def serialized_matrix(self, matrix):
-		labels = []
-
-		for y in range(0, matrix.shape[0]):
-			for x in range(0, matrix.shape[1]):
-				label = np.argmax(matrix[x][y])
-				labels.append(label)
+		return img.crop((0, 0, w, h-patchSize))
 
 
 	def majority_vote(self, patches, weightParents):
@@ -64,6 +56,15 @@ class RPC(object):
 		return votes.argmax(axis=0)
 
 
+	def serialized_matrix(self, matrix):
+		labels = []
+
+		for y in range(0, matrix.shape[0]):
+			for x in range(0, matrix.shape[1]):
+				label = np.argmax(matrix[y,x])
+				labels.append(label)
+
+		return labels
 
 
 	def patch_map(self, img, patchSize):
@@ -146,11 +147,120 @@ class RPC(object):
 
 		return dataPatchedF
 
-	def classifyLargePatch(self, patch):
-		# patch -> NN -> result [Label, weight]
-		randomWeights = np.random.rand(3)
-		
-		return 1
+	def classifyImage(self, img, patchSize):
+		#################### Define pooling layers ###########################################################################
+		P12=Pool_node(4)*(1.0/100.0) #factor 1000 added to lower values more
+		P34=Pool_node(1)*(1.0/10.0) 
+
+		#################### Define Convolution layers #######################################################################
+
+		######### First C layer #########
+		C1=[]
+
+		## First Kernel
+
+		# Inspiration: http://en.wikipedia.org/wiki/Sobel_operator
+		# http://stackoverflow.com/questions/9567882/sobel-filter-kernel-of-large-size
+
+		Kernel=np.array([[4,3,2,1,0,-1,-2,-3,-4],
+						 [5,4,3,2,0,-2,-3,-4,-5], 
+						 [6,5,4,3,0,-3,-4,-5,-6],
+						 [7,6,5,4,0,-4,-5,-6,-7], 
+						 [8,7,6,5,0,-5,-6,-7,-8],
+						 [7,6,5,4,0,-4,-5,-6,-7],
+						 [6,5,4,3,0,-3,-4,-5,-6],
+						 [5,4,3,2,0,-2,-3,-4,-5],
+						 [4,3,2,1,0,-1,-2,-3,-4]])
+
+		C1.append(Kernel)
+
+		## Second Kernel
+		Kernel=np.matrix.transpose(Kernel)
+		C1.append(Kernel)
+
+		##Third Kernel
+		#Kernel=makeGaussian(9,5)
+		#Kernel=(1/np.sum(Kernel))*Kernel
+		#C1.append(Kernel)
+
+		######### Initialize output weights and biases #########
+
+		# Define the number of branches in one row
+		patchSize=40
+		N_branches= 3
+		ClassAmount=3 # Forest, City, Water
+		Size_C2=5
+		S_H3=((patchSize-C1[0].shape[0]+1)/P12.shape[1])-Size_C2+1
+		S_H4=S_H3/P34.shape[1]
+
+		import pickle
+		file=open('W.txt','r')
+		W=pickle.load(file)
+		file=open('W2.txt','r')
+		W2=pickle.load(file)
+		file=open('Output_bias.txt','r')
+		Output_bias=pickle.load(file)
+		file=open('H3_bias.txt','r')
+		H3_bias=pickle.load(file)
+		file=open('C2.txt','r')
+		C2=pickle.load(file)
+
+		####### Test phase on new images #######
+		Error_Test=[]
+		N_correct=0
+		patchSize=40 
+
+		data=img.convert('RGB')
+		data= np.asarray( data, dtype="int32" )
+		data=0.2126*data[:,:,0]+0.7152*data[:,:,1]+0.0722*data[:,:,2]
+		data_RGB=img.convert('RGB')
+		data_RGB= np.asarray( data_RGB, dtype="int32" )
+		Yamount=data.shape[0]/patchSize # Counts how many times the windowsize fits in the picture
+		Xamount=data.shape[1]/patchSize # Counts how many times the windowsize fits in the picture
+			
+			
+		Patches=np.array([[data[y*patchSize:(y+1)*patchSize,  x*patchSize:(x+1)*patchSize] for x in range(0,Xamount)] for y in range(0,Yamount)]) 
+		Patches_RGB=np.array([[data_RGB[y*patchSize:(y+1)*patchSize,  x*patchSize:(x+1)*patchSize,:] for x in range(0,Xamount)] for y in range(0,Yamount)])     
+		RGB_values=np.mean(np.mean(Patches_RGB, axis=2),axis=2)/255
+
+		###### Chooses patch and defines label #####
+		#for PP in range(0,len(Sequence)):
+		forest=0
+		city=0
+		water=0
+
+
+		inputPatch=np.zeros((patchSize,patchSize))
+		Classifier_array=np.zeros((len(Patches[:,0,0,0]),len(Patches[0,:,0,0]),3))
+		for i in range(0,len(Patches[:,0,0,0])):
+			for j in range(0,len(Patches[0,:,0,0])):
+				inputPatch=Patches[i,j]
+				Int_RGB=RGB_values[i,j]
+				### Layer 1 ###
+				H1=[]
+				H2=[]
+				H3=np.zeros((len(C1), N_branches, S_H3,S_H3))
+				H4=np.zeros((len(C1), N_branches, S_H4,S_H4))
+				x=np.zeros(ClassAmount)
+				f=np.zeros(ClassAmount)
+				for r in range (0, len(C1)):
+					H1.append(sig.convolve(inputPatch, C1[r], 'valid'))
+					H2.append(Pool(H1[r], P12))
+					for b in range(0,N_branches):
+						H3[r][b]=Sigmoid(sig.convolve(H2[r], C2[r][b],'valid')-H3_bias[r][b])
+						H4[r][b]=Pool(H3[r][b],P34) 
+				y=np.append([H4.flatten()], [Int_RGB])
+				#Now we have 3x3x4x4 inputs, connected to the 3 output nodes 
+				for k in range(0,ClassAmount):
+					W_t=np.append([W[k].flatten()], [W2[k]])
+					x[k]=np.inner(y, W_t)          
+					f[k]=Sigmoid(x[k]-Output_bias[k])
+				Classifier_array[i,j]=f/np.sum((f))
+				if(np.argmax(f)==0):forest+=1.0
+				if(np.argmax(f)==1):city+=1.0 
+				if(np.argmax(f)==2):water+=1.0 
+
+		return Classifier_array  
 		
 
 
@@ -158,5 +268,46 @@ def main():
 	s = zerorpc.Server(RPC())
 	s.bind("tcp://*:4242")
 	s.run()
+
+########### Functions ############################################################################################################################
+
+# Define Activitation functions, pooling and convolution functions (the rules)
+
+def Sigmoid(x): 
+	return (1/(1+np.exp(-x)))
+
+def Sigmoid_dx(x):
+	return np.exp(-x)/((1+np.exp(-x))**2)
+
+def TanH(x):
+	return (1-np.exp(-x))/(1+np.exp(-x))
+
+
+def Pool(I,W):
+	PoolImg=np.zeros((len(I)/len(W),len(I)/len(W))) # W must fit an integer times into I.
+	for i in range(0,len(PoolImg)):
+		for j in range(0,len(PoolImg)):
+			SelAr=I[i*len(W):(i+1)*len(W),j*len(W):(j+1)*len(W)]
+			PoolImg[i,j]=np.inner(SelAr.flatten(),W.flatten()) # Now this is just an inner product since we have vectors
+	return PoolImg
+
+# To automatically make Gaussian kernels
+def makeGaussian(size, fwhm = 3, center=None):
+	x = np.arange(0, size, 1, float)
+	y = x[:,np.newaxis]
+
+	if center is None:
+		x0 = y0 = size // 2
+	else:
+		x0 = center[0]
+		y0 = center[1]
+
+	return np.exp(-4*np.log(2) * ((x-x0)**2 + (y-y0)**2) / fwhm**2)
+
+# To automatically define pooling nodes
+def Pool_node(N):
+	s=(N,N)
+	a=float(N)*float(N)
+	return (1.0/a)*np.ones(s) 
 
 if __name__ == "__main__" : main()

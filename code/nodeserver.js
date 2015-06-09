@@ -51,7 +51,8 @@ socketIo.sockets.on('connection', function (socket) {
 				else {
 					console.log("ok!");
 				}
-				socket.emit('classify_reply', reply);
+				console.log('done')
+				//socket.emit('classify_reply', reply);
 			});
 	});
 
