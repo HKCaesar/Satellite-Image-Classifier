@@ -149,18 +149,29 @@ class RPC(object):
 
 	def classifyImage(self, img, patchSize):
 		#################### Define pooling layers ###########################################################################
-		P12=Pool_node(4)*(1.0/100.0) #factor 1000 added to lower values more
-		P34=Pool_node(1)*(1.0/10.0) 
+		P12=Pool_node(4)*(1.0/1.000) #factor 1000 added to lower values more
+		P34=Pool_node(1)*(1.0/1.0) 
 
 		#################### Define Convolution layers #######################################################################
 
 		######### First C layer #########
 		C1=[]
-
+		Kernelsize=9
 		## First Kernel
 
 		# Inspiration: http://en.wikipedia.org/wiki/Sobel_operator
 		# http://stackoverflow.com/questions/9567882/sobel-filter-kernel-of-large-size
+
+		## First kernel
+		Kernel=np.zeros((Kernelsize,Kernelsize))
+		for i in range(0,Kernelsize):
+			for j in range(0,Kernelsize):
+				if(i==j):Kernel[i,j]=1
+				if(i>j): Kernel[i,j]=5
+				if(i<j): Kernel[i,j]=-5
+					
+		C1.append(Kernel*(1.0/100.0))
+
 
 		Kernel=np.array([[4,3,2,1,0,-1,-2,-3,-4],
 						 [5,4,3,2,0,-2,-3,-4,-5], 
@@ -172,93 +183,100 @@ class RPC(object):
 						 [5,4,3,2,0,-2,-3,-4,-5],
 						 [4,3,2,1,0,-1,-2,-3,-4]])
 
+		C1.append(Kernel*(1.0/100.0))
+
+		## Fourth Kernel
+		Kernel=np.zeros((Kernelsize,Kernelsize))
+		Kernel[0:4,:]=-5
+		Kernel[4:5,:]=0
+		Kernel[5:9,:]=5    
+		C1.append(Kernel*(1.0/100.0))
+				
+
+		## kernel
+		Kernel=np.zeros((Kernelsize,Kernelsize))
+		Kernel[3:6,3:6]=-2 
+		Kernel[4,4]=8
+		C1.append(Kernel*(1.0/100.0))
+
+		## kernel
+		Kernel=np.transpose(C1[2])
 		C1.append(Kernel)
 
-		## Second Kernel
-		Kernel=np.matrix.transpose(Kernel)
-		C1.append(Kernel)
-
-		##Third Kernel
-		#Kernel=makeGaussian(9,5)
-		#Kernel=(1/np.sum(Kernel))*Kernel
-		#C1.append(Kernel)
 
 		######### Initialize output weights and biases #########
 
-		# Define the number of branches in one row
-		patchSize=40
-		N_branches= 3
+		# Initialisation, since this layer should be trained!
+		N_branches=1
 		ClassAmount=3 # Forest, City, Water
-		Size_C2=5
-		S_H3=((patchSize-C1[0].shape[0]+1)/P12.shape[1])-Size_C2+1
-		S_H4=S_H3/P34.shape[1]
+
 
 		import pickle
-		file=open('W.txt','r')
+		file=open('W_michiel.txt','r')
 		W=pickle.load(file)
-		file=open('W2.txt','r')
-		W2=pickle.load(file)
-		file=open('Output_bias.txt','r')
-		Output_bias=pickle.load(file)
-		file=open('H3_bias.txt','r')
-		H3_bias=pickle.load(file)
-		file=open('C2.txt','r')
+		file=open('C2_michiel.txt','r')
 		C2=pickle.load(file)
+		file=open('bias_michiel.txt','r')
+		bias=pickle.load(file)
+		file=open('H3_bias_michiel.txt','r')
+		H3_bias=pickle.load(file)
 
 		####### Test phase on new images #######
 		Error_Test=[]
 		N_correct=0
-		patchSize=40 
 
 		data=img.convert('RGB')
 		data= np.asarray( data, dtype="int32" )
 		data=0.2126*data[:,:,0]+0.7152*data[:,:,1]+0.0722*data[:,:,2]
-		data_RGB=img.convert('RGB')
-		data_RGB= np.asarray( data_RGB, dtype="int32" )
 		Yamount=data.shape[0]/patchSize # Counts how many times the windowsize fits in the picture
 		Xamount=data.shape[1]/patchSize # Counts how many times the windowsize fits in the picture
 			
 			
 		Patches=np.array([[data[y*patchSize:(y+1)*patchSize,  x*patchSize:(x+1)*patchSize] for x in range(0,Xamount)] for y in range(0,Yamount)]) 
-		Patches_RGB=np.array([[data_RGB[y*patchSize:(y+1)*patchSize,  x*patchSize:(x+1)*patchSize,:] for x in range(0,Xamount)] for y in range(0,Yamount)])     
-		RGB_values=np.mean(np.mean(Patches_RGB, axis=2),axis=2)/255
 
 		###### Chooses patch and defines label #####
 		#for PP in range(0,len(Sequence)):
 		forest=0
 		city=0
-		water=0
-
+		grass=0
+		cityImg=[]
+		forestImg=[]
 
 		inputPatch=np.zeros((patchSize,patchSize))
 		Classifier_array=np.zeros((len(Patches[:,0,0,0]),len(Patches[0,:,0,0]),3))
 		for i in range(0,len(Patches[:,0,0,0])):
 			for j in range(0,len(Patches[0,:,0,0])):
 				inputPatch=Patches[i,j]
-				Int_RGB=RGB_values[i,j]
 				### Layer 1 ###
 				H1=[]
 				H2=[]
-				H3=np.zeros((len(C1), N_branches, S_H3,S_H3))
-				H4=np.zeros((len(C1), N_branches, S_H4,S_H4))
+				H3=[[np.zeros((4,4)) for b in range(0,N_branches)] for r in range(0,len(C1))]
+				H4=[[np.zeros((4,4)) for b in range(0,N_branches)] for r in range(0,len(C1))]
+				I_H3=np.ones((4,4))
 				x=np.zeros(ClassAmount)
 				f=np.zeros(ClassAmount)
+
 				for r in range (0, len(C1)):
 					H1.append(sig.convolve(inputPatch, C1[r], 'valid'))
 					H2.append(Pool(H1[r], P12))
 					for b in range(0,N_branches):
-						H3[r][b]=Sigmoid(sig.convolve(H2[r], C2[r][b],'valid')-H3_bias[r][b])
-						H4[r][b]=Pool(H3[r][b],P34) 
-				y=np.append([H4.flatten()], [Int_RGB])
-				#Now we have 3x3x4x4 inputs, connected to the 3 output nodes 
+						H3[r][b]=Sigmoid(sig.convolve(H2[r], C2[r][b],'valid')-H3_bias[r][b]*I_H3)
+						H4[r][b]=Pool(H3[r][b],P34)
+
 				for k in range(0,ClassAmount):
-					W_t=np.append([W[k].flatten()], [W2[k]])
-					x[k]=np.inner(y, W_t)          
-					f[k]=Sigmoid(x[k]-Output_bias[k])
+					for r in range (0, len(C1)):
+						for b in range(0,N_branches):
+							x[k]=x[k]+np.inner(H4[r][b].flatten(),W[r][b,k].flatten())
+					f[k]=Sigmoid(x[k]-bias[k])
+
+				if(np.argmax(f)==0):
+					forest+=1.0
+					forestImg.append(inputPatch)
+				if(np.argmax(f)==1):
+					city+=1.0
+					cityImg.append(inputPatch)
+				if(np.argmax(f)==2):grass+=1.0     
 				Classifier_array[i,j]=f/np.sum((f))
-				if(np.argmax(f)==0):forest+=1.0
-				if(np.argmax(f)==1):city+=1.0 
-				if(np.argmax(f)==2):water+=1.0 
 
 		return Classifier_array  
 		
