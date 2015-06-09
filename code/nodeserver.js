@@ -42,8 +42,8 @@ socketIo.sockets.on('connection', function (socket) {
 		});
 	});
 
-	socket.on('classify', function (data) {
-		pythonServer.invoke('classify', data.url, data.patchDim, 
+	socket.on('classify_small', function (data) {
+		pythonServer.invoke('classify_small', data.url, data.patchDim, 
 			function(error, reply, streaming) {
 				if(error) {
 					console.log("ERROR: ", error);
@@ -51,7 +51,21 @@ socketIo.sockets.on('connection', function (socket) {
 				else {
 					console.log("ok!");
 				}
-				console.log('done')
+				console.log('done small')
+				socket.emit('classify_reply', reply);
+			});
+	});
+
+	socket.on('classify_large', function (data) {
+		pythonServer.invoke('classify_large', data.url, data.patchDim, 
+			function(error, reply, streaming) {
+				if(error) {
+					console.log("ERROR: ", error);
+				}
+				else {
+					console.log("ok!");
+				}
+				console.log('done large')
 				socket.emit('classify_reply', reply);
 			});
 	});

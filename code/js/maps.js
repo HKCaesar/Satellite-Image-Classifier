@@ -9,6 +9,7 @@ var label2Color = {
 	1 : 'blue',
 	2 : 'yellow'
 }
+var useSmallerGrid = false;
 // Establish connection to node server
 var socket = io.connect('http://localhost:8080');
 var parents;
@@ -22,7 +23,13 @@ socket.on('reply', function (data) {
 });
 
 socket.on('classify_reply', function (data) {
-	render(data);
+	if (useSmallerGrid) {
+		renderSmall(data);
+	}
+	else {
+		console.log(1)
+		renderLarge(data);
+	}
 })
 
 function onLoad() {
@@ -55,7 +62,7 @@ function getMap() {
 }
 
 function clickRandom() {
-	$('.labelClass').remove();
+	$('[class^=labelClass').remove();
 	// Manually found bounding box locations
 	var minLat = 52.298379183128596;
 	var maxLat = 52.43520441347777;
@@ -72,8 +79,14 @@ function clickRandom() {
 }
 
 function clickClassify() {
+	$('[class^=labelClass').remove();
 	var url = makeImageRequest('AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS');
-	socket.emit('classify', {url, patchDim});
+	if (useSmallerGrid) {
+		socket.emit('classify_small', {url, patchDim});
+	}
+	else {
+		socket.emit('classify_large', {url, patchDim});
+	}
 }
 
 function clickGetImage(credentials) {
@@ -153,8 +166,7 @@ function extractPatchSize(array) {
 	return patchSize;
 }
 
-function render(protocol) {
-	console.log(protocol);
+function renderSmall(protocol) {
 	var width = extractWidth(protocol); 
 	var height = extractHeight(protocol);
 	var patchDim = extractPatchSize(protocol);
@@ -171,9 +183,30 @@ function render(protocol) {
 		for(j = 0; j < widthSteps; j++) {
 			var x = (j+1) * patchDimHalf;
 			var y = (i+1) * patchDimHalf;
-			renderDiv(x,y,label2Color[extractFirstLabel(protocol)]);
+			renderDivSmall(x,y,label2Color[extractFirstLabel(protocol)]);
 		}
 	}
+}
+
+function renderLarge(protocol) {
+	var width = extractWidth(protocol);
+	var height = extractHeight(protocol);
+	var patchDim = extractPatchSize(protocol);
+
+	var patchDimHalf = patchDim;
+	var widthSteps = width/patchDimHalf;
+	var heightSteps = height/patchDimHalf;
+	console.log(2)
+
+	for(i = 0; i < heightSteps; i++) {
+		for(j = 0; j < widthSteps; j++) {
+			var x = j * patchDimHalf;
+			var y = i * patchDimHalf;
+			renderDivLarge(x,y,label2Color[extractFirstLabel(protocol)]);
+		}
+	}
+
+	console.log(3)
 
 }
 
@@ -183,8 +216,13 @@ function extractFirstLabel(array) {
 	return label;
 }
 
-function renderDiv(x, y,color) {
-	var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).addClass('border-' + color);
+function renderDivSmall(x, y,color) {
+	var div = $('<div>', {class: 'labelClassSmall'}).css('margin-left',x).css('margin-top',y).addClass('border-' + color);
+	$('#grid').append(div);
+}
+
+function renderDivLarge(x, y,color) {
+	var div = $('<div>', {class: 'labelClassLarge'}).css('margin-left',x).css('margin-top',y).addClass('border-' + color);
 	$('#grid').append(div);
 }
 
@@ -211,6 +249,11 @@ function yellowClick() {
 	restore();
 	$('.border-blue').css('border-color','gray');
 	$('.border-red').css('border-color','gray');
+}
+
+function smallerGrid(checkbox) {
+	useSmallerGrid = checkbox.checked;
+	console.log(useSmallerGrid);
 }
 
 

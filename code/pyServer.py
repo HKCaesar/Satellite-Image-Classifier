@@ -20,12 +20,12 @@ class RPC(object):
 	def hello(self, name):
 		return "Hello, {0}!".format(name)
 
-	def classify(self, url, patchSize):
+	def classify_small(self, url, patchSize):
 		img = self.crop_image(url, patchSize)
-		w, h = img.size
 
 		smallPatchId, largePatchId, parents = self.patch_map(img, patchSize)
-		patches = self.get_patches(img, patchSize)
+		w, h = img.size
+		patches = self.get_patches(img, patchSize, False)
 
 		matrix = self.classifyImage(img, patchSize)
 		labels = []
@@ -45,11 +45,19 @@ class RPC(object):
 
 		return np.concatenate([[w, h, patchSize], labels]).tolist()
 
-		# serialized = self.serialized_matrix(matrix)
+	def classify_large(self, url, patchSize):
+		img = self.crop_image(url, patchSize)
+		w, h = img.size
 
-		# result = np.concatenate([[w, h, patchSize], serialized])
+		patches = self.get_patches(img, patchSize, True)
 
-		# return result.tolist()
+		matrix = self.classifyImage(img, patchSize)
+
+		serialized = self.serialized_matrix(matrix)
+
+		result = np.concatenate([[w, h, patchSize], serialized])
+
+		return result.tolist()
 
 	def crop_image(self, url, patchSize):
 		file = cStringIO.StringIO(urllib.urlopen(url).read())
@@ -146,20 +154,24 @@ class RPC(object):
 		Third dimension: y position of pixel in large patch
 		Fourth dimension: x position of pixel in large patch
 	'''
-	def get_patches(self, img, patchSize):
+	def get_patches(self, img, patchSize, isLarge):
 		########### Load Input ############################################################################################################################
 		# In this script I used the brightness to determine structures, instead of one RGB color:
 		# this is determined by: 0.2126*R + 0.7152*G + 0.0722*B
 		# Source: https://en.wikipedia.org/wiki/Relative_luminance
 
 		dataPatchedF=[]
+		offset = 1
+
+		if (isLarge):
+			offset = 0
 
 		data=img.convert('RGB')
 		data= np.asarray( data, dtype="int32" )
 		data=0.2126*data[:,:,0]+0.7152*data[:,:,1]+0.0722*data[:,:,2]
 		Yamount=data.shape[0]/patchSize # Counts how many times the windowsize fits in the picture
 		Xamount=data.shape[1]/patchSize # Counts how many times the windowsize fits in the picture
-		dataPatchedF.append(np.array([[data[j*(patchSize/2):(j+2)*(patchSize/2),i*(patchSize/2):(i+2)*(patchSize/2)] for i in range(0,2*Xamount-1)] for j in range(0,2*Yamount-1)]))
+		dataPatchedF.append(np.array([[data[j*(patchSize/1 + offset):(j+1 + offset)*(patchSize/1 + offset),i*(patchSize/1 + offset):(i+1 + offset)*(patchSize/1 + offset)] for i in range(0,1 + offset*Xamount-offset)] for j in range(0,1 + offset*Yamount-offset)]))
 
 		return dataPatchedF
 
