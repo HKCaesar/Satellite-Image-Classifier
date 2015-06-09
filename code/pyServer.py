@@ -20,9 +20,8 @@ class RPC(object):
 		return "Hello, {0}!".format(name)
 
 	def location(self, location):
-		print location
 
-	def crop_map(self, url, patchSize):
+	def classify(self, url, patchSize):
 		file = cStringIO.StringIO(urllib.urlopen(url).read())
 		img = Image.open(file)
 		w, h = img.size
@@ -33,25 +32,30 @@ class RPC(object):
 		smallPatchId, largePatchId, parents = self.patch_map(cropped, patchSize)
 		patches = self.get_patches(img, patchSize)
 
-		weights = []
+		# print len(patches[0][0][0][0][0])
+
+		labels = []
 
 		for y in range(0, len(patches[0])):
 			for x in range(0, len(patches[0][0])):
-				weights.append(self.classifyLargePatch(patches[0][y][x]))
+				labels.append(self.classifyLargePatch(patches[0][y][x]))
 
-		print len(weights)
+		#labelsSmall = {}
 
-		labelsSmall = {}
+		# for i in range(0, len(smallPatchId)):
+		# 	# Check if the small patch is in the border
+		# 	if (i in parents):
+		# 		p = parents[i]
+		# 		weightParent = [ weights[p[0]], weights[p[1]], weights[p[2]], weights[p[3]] ]
 
-		for i in range(0, len(smallPatchId)):
-			# Check if the small patch is in the border
-			if (i in parents):
-				p = parents[i]
-				weightParent = [ weights[p[0]], weights[p[1]], weights[p[2]], weights[p[3]] ]
+		# 		labelsSmall[i] = majority_vote(smallPatchParents, weightParents)
 
-				labelsSmall[i] = majority_vote(smallPatchParents, weightParents)
+		size = [w, h-patchSize, patchSize]
 
-		return labelsSmall		
+		return np.concatenate([size, labels]).tolist()
+
+
+		#return labelsSmall		
 
 	def majority_vote(self, patches, weightParents):
 		votes = [0] * len(patches)
@@ -143,7 +147,7 @@ class RPC(object):
 		data=0.2126*data[:,:,0]+0.7152*data[:,:,1]+0.0722*data[:,:,2]
 		Yamount=data.shape[0]/patchSize # Counts how many times the windowsize fits in the picture
 		Xamount=data.shape[1]/patchSize # Counts how many times the windowsize fits in the picture
-		dataPatchedF.append(np.array([[data[j*(patchSize/2):(j+2)*(patchSize/2),i*(patchSize/2):(i+2)*(patchSize/2)] for i in range(0,2*Xamount-1)] for j in range(0,2*Yamount-1)]))
+		dataPatchedF.append(np.array([[data[j*(patchSize/1):(j+1)*(patchSize/1),i*(patchSize/1):(i+1)*(patchSize/1)] for i in range(0,1*Xamount-0)] for j in range(0,1*Yamount-0)]))
 
 		return dataPatchedF
 
@@ -151,7 +155,7 @@ class RPC(object):
 		# patch -> NN -> result [Label, weight]
 		randomWeights = np.random.rand(3)
 		
-		return randomWeights
+		return 1
 		
 
 

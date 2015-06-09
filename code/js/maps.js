@@ -21,11 +21,12 @@ socket.on('reply', function (data) {
 	console.log("Received from Node.js: " + data);
 });
 
-socket.on('parents', function (data) {
-	parents = data;
+socket.on('classify_reply', function (data) {
+	render(data);
 })
 
 function onLoad() {
+
 	$('.border-red').click(function() { redClick(); });
 	$('.border-blue').click(function() { blueClick(); });
 	$('.border-yellow').click(function() { yellowClick(); });
@@ -50,7 +51,7 @@ function getMap() {
 		labelOverlay: Microsoft.Maps.LabelOverlay.hidden
 	});
 	clickLocationInfo();
-	render(generateTestSet());
+	//render(generateTestSet());
 }
 
 function clickRandom() {
@@ -69,6 +70,12 @@ function clickRandom() {
 	clickLocationInfo();
 }
 
+function clickClassify() {
+	var url = makeImageRequest('AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS');
+	console.log(url)
+	socket.emit('classify', {url, patchDim});
+}
+
 function clickGetImage(credentials) {
 	map.getCredentials(makeImageRequest);
 }
@@ -77,7 +84,7 @@ function makeImageRequest(credentials) {
 	var lat = map.getCenter().latitude;
 	var lon = map.getCenter().longitude;
 	var link = "http://dev.virtualearth.net/REST/v1/Imagery/Map/Aerial/"+lat+","+lon+"/16?mapSize=" + mapWidth + "," + mapHeight +"&key=" + credentials;
-	socket.emit('crop', {link, patchDim});
+	return link;
 }
 
 function clickLocationInfo(credentials) {
@@ -147,22 +154,22 @@ function extractPatchSize(array) {
 }
 
 function render(protocol) {
-	var array = protocol2Array(protocol);
-	var width = extractWidth(array);
-	var height = extractHeight(array);
-	var patchDim = extractPatchSize(array);
+	var width = extractWidth(protocol);
+	var height = extractHeight(protocol);
+	var patchDim = extractPatchSize(protocol);
 
 	var patchDimHalf = patchDim;
 	var widthSteps = width/patchDimHalf;
 	var heightSteps = height/patchDimHalf;
 
-	for(i = 0; i < heightSteps-1; i++) {
+	for(i = 0; i < heightSteps; i++) {
 		for(j = 0; j < widthSteps; j++) {
 			var x = j * patchDimHalf;
 			var y = i * patchDimHalf;
-			renderDiv(x,y,label2Color[extractFirstLabel(array)]);
+			renderDiv(x,y,label2Color[extractFirstLabel(protocol)]);
 		}
 	}
+
 }
 
 function extractFirstLabel(array) {

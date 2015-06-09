@@ -42,8 +42,8 @@ socketIo.sockets.on('connection', function (socket) {
 		});
 	});
 
-	socket.on('crop', function (data) {
-		pythonServer.invoke('crop_map', data.link, data.patchDim, 
+	socket.on('classify', function (data) {
+		pythonServer.invoke('classify', data.url, data.patchDim, 
 			function(error, reply, streaming) {
 				if(error) {
 					console.log("ERROR: ", error);
@@ -51,7 +51,7 @@ socketIo.sockets.on('connection', function (socket) {
 				else {
 					console.log("ok!");
 				}
-				socket.emit('parents', reply);
+				socket.emit('classify_reply', reply);
 			});
 	});
 
