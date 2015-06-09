@@ -28,12 +28,28 @@ class RPC(object):
 		patches = self.get_patches(img, patchSize)
 
 		matrix = self.classifyImage(img, patchSize)
+		labels = []
 
-		serialized = self.serialized_matrix(matrix)
+		for i in range(0, len(smallPatchId)):
+			if (i in parents):
+				weights = []
+				p = parents[i]
+				for j in range(0, len(p)):
+					parent = p[j]
+					x = largePatchId[parent]['x']
+					y = largePatchId[parent]['y']
+					weights.append(matrix[y, x])
+				summed_weights = np.sum(weights, axis=0)
+				label = np.argmax(summed_weights)
+				labels.append(label);
 
-		result = np.concatenate([[w, h, patchSize], serialized])
+		return np.concatenate([[w, h, patchSize], labels]).tolist()
 
-		return result.tolist()
+		# serialized = self.serialized_matrix(matrix)
+
+		# result = np.concatenate([[w, h, patchSize], serialized])
+
+		# return result.tolist()
 
 	def crop_image(self, url, patchSize):
 		file = cStringIO.StringIO(urllib.urlopen(url).read())
@@ -82,7 +98,7 @@ class RPC(object):
 
 		# Number of patches in x and y dimensions
 		dimSmall = {'x': w / smallPatchSize, 'y': h / smallPatchSize}
-		dimLarge = {'x': w / largePatchSize, 'y': h / largePatchSize}
+		dimLarge = {'x': 2*(w / largePatchSize) - 1, 'y': 2*(h / largePatchSize)-1}
 
 		################# Map patch id's to (x,y)-coordinates ###################
 		smallIndex = 0
@@ -95,10 +111,10 @@ class RPC(object):
 					h - y >= largePatchSize and
 					w - x >= largePatchSize
 				):
-					largePatchId[largeIndex] = {'x': x, 'y': y}
+					largePatchId[largeIndex] = {'x': x / largePatchSize, 'y': y / largePatchSize}
 					largeIndex += 1	
 
-				smallPatchId[smallIndex] = {'x': x, 'y': y}
+				smallPatchId[smallIndex] = {'x': x / smallPatchSize, 'y': y / smallPatchSize}
 				smallIndex += 1
 
 
@@ -143,7 +159,7 @@ class RPC(object):
 		data=0.2126*data[:,:,0]+0.7152*data[:,:,1]+0.0722*data[:,:,2]
 		Yamount=data.shape[0]/patchSize # Counts how many times the windowsize fits in the picture
 		Xamount=data.shape[1]/patchSize # Counts how many times the windowsize fits in the picture
-		dataPatchedF.append(np.array([[data[j*(patchSize/1):(j+1)*(patchSize/1),i*(patchSize/1):(i+1)*(patchSize/1)] for i in range(0,1*Xamount-0)] for j in range(0,1*Yamount-0)]))
+		dataPatchedF.append(np.array([[data[j*(patchSize/2):(j+2)*(patchSize/2),i*(patchSize/2):(i+2)*(patchSize/2)] for i in range(0,2*Xamount-1)] for j in range(0,2*Yamount-1)]))
 
 		return dataPatchedF
 

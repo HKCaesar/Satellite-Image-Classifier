@@ -52,7 +52,7 @@ socketIo.sockets.on('connection', function (socket) {
 					console.log("ok!");
 				}
 				console.log('done')
-				//socket.emit('classify_reply', reply);
+				socket.emit('classify_reply', reply);
 			});
 	});
 

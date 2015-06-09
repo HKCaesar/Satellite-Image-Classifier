@@ -154,18 +154,23 @@ function extractPatchSize(array) {
 }
 
 function render(protocol) {
-	var width = extractWidth(protocol);
+	console.log(protocol);
+	var width = extractWidth(protocol); 
 	var height = extractHeight(protocol);
 	var patchDim = extractPatchSize(protocol);
 
-	var patchDimHalf = patchDim;
+	width -= patchDim;
+	height -= patchDim;
+
+
+	var patchDimHalf = patchDim/2;
 	var widthSteps = width/patchDimHalf;
 	var heightSteps = height/patchDimHalf;
 
 	for(i = 0; i < heightSteps; i++) {
 		for(j = 0; j < widthSteps; j++) {
-			var x = j * patchDimHalf;
-			var y = i * patchDimHalf;
+			var x = (j+1) * patchDimHalf;
+			var y = (i+1) * patchDimHalf;
 			renderDiv(x,y,label2Color[extractFirstLabel(protocol)]);
 		}
 	}
