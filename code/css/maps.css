@@ -17,26 +17,31 @@
 }
 #map-hiders {
 	position: absolute;
-	margin-left: -50px;
-	margin-top:-500px;
-	z-index: 3;
+	margin-top:-40px;
+	height: 40px;
+	width: 800px;
+	background-color: white;
+	z-index: 4;
 }
 #interaction {
 	float: left;
 	width: 800px;
 }
-#gmapscontrolremover-bottom {
-	position: absolute;
-	margin-left: 50px;
-	margin-top:475px;
-	width:816px;
-	height:25px;
-	background-color: white;
-	z-index:4;
-}
 #header {
 	height:50px;
 	z-index: 5;
+}
+#randombutton {
+	text-align: center;
+}
+#getimagebutton {
+	text-align: center;
+}
+#getlocationinfo {
+	text-align: center;
+}
+#classifybutton {
+	text-align: center;
 }
 .legend-item {
 	padding-left:10px;
@@ -54,38 +59,21 @@
 .border-yellow {
 	border-color : yellow;
 }
-
 .red {
 	background-color: red;
 }
-
 .blue {
 	background-color: blue;
 }
-
 .yellow {
 	background-color: yellow;
 }
-
 .gray {
 	background-color: gray;
 }
-
-#randombutton {
-	text-align: center;
-}
-#getimagebutton {
-	text-align: center;
-}
-#getlocationinfo {
-	text-align: center;
-}
-#classifybutton {
-	text-align: center;
-}
 .labelClass {
-	width : 23px;
-	height: 23px;
+	width : 39px;
+	height: 39px;
 	border-style: solid;
 	border-width: 1px;
 	position: absolute;

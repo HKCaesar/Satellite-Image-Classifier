@@ -1,8 +1,8 @@
 var map = null;
 var mapinfo;
-var mapWidth = 816;
-var mapHeight = 528;
-var patchDim = 48;
+var mapWidth = 800;
+var mapHeight = 600;
+var patchDim = 40;
 var labels = [0,1,2];
 var label2Color = {
 	0 : 'red',
@@ -111,7 +111,7 @@ function locationCallback(result) {
 
 function generateTestSet() {
 	var testReturnProtocol = "" + mapWidth + "," + mapHeight + "," + patchDim;
-	var steps = mapWidth*mapHeight/((patchDim/2)*(patchDim/2));
+	var steps = mapWidth*mapHeight/((patchDim)*(patchDim));
 	for (i = 0; i < steps; i++) {
 		var randomClass = labels[Math.floor(Math.random() * labels.length)];
 		testReturnProtocol = testReturnProtocol + "," + randomClass;
@@ -147,7 +147,7 @@ function render(protocol) {
 	var height = extractHeight(array);
 	var patchDim = extractPatchSize(array);
 
-	var patchDimHalf = patchDim/2;
+	var patchDimHalf = patchDim;
 	var widthSteps = width/patchDimHalf;
 	var heightSteps = height/patchDimHalf;
 
