@@ -42,14 +42,31 @@ socketIo.sockets.on('connection', function (socket) {
 		});
 	});
 
-	socket.on('crop', function (data) {
-		pythonServer.invoke('crop_map', data.link, data.patchDim, 
+	socket.on('classify_small', function (data) {
+		pythonServer.invoke('classify_small', data.url, data.patchDim, 
 			function(error, reply, streaming) {
 				if(error) {
 					console.log("ERROR: ", error);
 				}
+				else {
+					console.log("ok!");
+				}
+				console.log('done small')
+				socket.emit('classify_reply', reply);
+			});
+	});
 
-				console.log(reply[645][0]);
+	socket.on('classify_large', function (data) {
+		pythonServer.invoke('classify_large', data.url, data.patchDim, 
+			function(error, reply, streaming) {
+				if(error) {
+					console.log("ERROR: ", error);
+				}
+				else {
+					console.log("ok!");
+				}
+				console.log('done large')
+				socket.emit('classify_reply', reply);
 			});
 	});
 

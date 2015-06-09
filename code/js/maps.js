@@ -1,16 +1,18 @@
 var map = null;
 var mapinfo;
-var mapWidth = 816;
-var mapHeight = 528;
-var patchDim = 48;
+var mapWidth = 800;
+var mapHeight = 600;
+var patchDim = 40;
 var labels = [0,1,2];
 var label2Color = {
 	0 : 'red',
 	1 : 'blue',
 	2 : 'yellow'
 }
+var useSmallerGrid = false;
 // Establish connection to node server
 var socket = io.connect('http://localhost:8080');
+var parents;
 
 // Emit event flag to node server
 socket.emit('event');
@@ -20,7 +22,18 @@ socket.on('reply', function (data) {
 	console.log("Received from Node.js: " + data);
 });
 
+socket.on('classify_reply', function (data) {
+	if (useSmallerGrid) {
+		renderSmall(data);
+	}
+	else {
+		console.log(1)
+		renderLarge(data);
+	}
+})
+
 function onLoad() {
+
 	$('.border-red').click(function() { redClick(); });
 	$('.border-blue').click(function() { blueClick(); });
 	$('.border-yellow').click(function() { yellowClick(); });
@@ -45,10 +58,11 @@ function getMap() {
 		labelOverlay: Microsoft.Maps.LabelOverlay.hidden
 	});
 	clickLocationInfo();
-	render(generateTestSet());
+	//render(generateTestSet());
 }
 
 function clickRandom() {
+	$('[class^=labelClass').remove();
 	// Manually found bounding box locations
 	var minLat = 52.298379183128596;
 	var maxLat = 52.43520441347777;
@@ -64,6 +78,17 @@ function clickRandom() {
 	clickLocationInfo();
 }
 
+function clickClassify() {
+	$('[class^=labelClass').remove();
+	var url = makeImageRequest('AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS');
+	if (useSmallerGrid) {
+		socket.emit('classify_small', {url, patchDim});
+	}
+	else {
+		socket.emit('classify_large', {url, patchDim});
+	}
+}
+
 function clickGetImage(credentials) {
 	map.getCredentials(makeImageRequest);
 }
@@ -72,7 +97,7 @@ function makeImageRequest(credentials) {
 	var lat = map.getCenter().latitude;
 	var lon = map.getCenter().longitude;
 	var link = "http://dev.virtualearth.net/REST/v1/Imagery/Map/Aerial/"+lat+","+lon+"/16?mapSize=" + mapWidth + "," + mapHeight +"&key=" + credentials;
-	socket.emit('crop', {link, patchDim});
+	return link;
 }
 
 function clickLocationInfo(credentials) {
@@ -111,7 +136,7 @@ function locationCallback(result) {
 
 function generateTestSet() {
 	var testReturnProtocol = "" + mapWidth + "," + mapHeight + "," + patchDim;
-	var steps = mapWidth*mapHeight/((patchDim/2)*(patchDim/2));
+	var steps = mapWidth*mapHeight/((patchDim)*(patchDim));
 	for (i = 0; i < steps; i++) {
 		var randomClass = labels[Math.floor(Math.random() * labels.length)];
 		testReturnProtocol = testReturnProtocol + "," + randomClass;
@@ -141,23 +166,48 @@ function extractPatchSize(array) {
 	return patchSize;
 }
 
-function render(protocol) {
-	var array = protocol2Array(protocol);
-	var width = extractWidth(array);
-	var height = extractHeight(array);
-	var patchDim = extractPatchSize(array);
+function renderSmall(protocol) {
+	var width = extractWidth(protocol); 
+	var height = extractHeight(protocol);
+	var patchDim = extractPatchSize(protocol);
+
+	width -= patchDim;
+	height -= patchDim;
+
 
 	var patchDimHalf = patchDim/2;
 	var widthSteps = width/patchDimHalf;
 	var heightSteps = height/patchDimHalf;
 
-	for(i = 0; i < heightSteps-1; i++) {
+	for(i = 0; i < heightSteps; i++) {
+		for(j = 0; j < widthSteps; j++) {
+			var x = (j+1) * patchDimHalf;
+			var y = (i+1) * patchDimHalf;
+			renderDivSmall(x,y,label2Color[extractFirstLabel(protocol)]);
+		}
+	}
+}
+
+function renderLarge(protocol) {
+	var width = extractWidth(protocol);
+	var height = extractHeight(protocol);
+	var patchDim = extractPatchSize(protocol);
+
+	var patchDimHalf = patchDim;
+	var widthSteps = width/patchDimHalf;
+	var heightSteps = height/patchDimHalf;
+	console.log(2)
+
+	for(i = 0; i < heightSteps; i++) {
 		for(j = 0; j < widthSteps; j++) {
 			var x = j * patchDimHalf;
 			var y = i * patchDimHalf;
-			renderDiv(x,y,label2Color[extractFirstLabel(array)]);
+			renderDivLarge(x,y,label2Color[extractFirstLabel(protocol)]);
 		}
 	}
+
+	console.log(3)
+
 }
 
 function extractFirstLabel(array) {
@@ -166,8 +216,13 @@ function extractFirstLabel(array) {
 	return label;
 }
 
-function renderDiv(x, y,color) {
-	var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).addClass('border-' + color);
+function renderDivSmall(x, y,color) {
+	var div = $('<div>', {class: 'labelClassSmall'}).css('margin-left',x).css('margin-top',y).addClass('border-' + color);
+	$('#grid').append(div);
+}
+
+function renderDivLarge(x, y,color) {
+	var div = $('<div>', {class: 'labelClassLarge'}).css('margin-left',x).css('margin-top',y).addClass('border-' + color);
 	$('#grid').append(div);
 }
 
@@ -194,6 +249,11 @@ function yellowClick() {
 	restore();
 	$('.border-blue').css('border-color','gray');
 	$('.border-red').css('border-color','gray');
+}
+
+function smallerGrid(checkbox) {
+	useSmallerGrid = checkbox.checked;
+	console.log(useSmallerGrid);
 }
 
 
