@@ -19,6 +19,12 @@ socket.emit('event');
 socket.on('reply', function (data) {
 	console.log("Received from Node.js: " + data);
 });
+
+function onLoad() {
+	$('.border-red').click(function() { redClick(); });
+	$('.border-blue').click(function() { blueClick(); });
+	$('.border-yellow').click(function() { yellowClick(); });
+}
 			
 function getMap() {
 	map = new Microsoft.Maps.Map(document.getElementById('map_id'), 
@@ -38,6 +44,8 @@ function getMap() {
 		center: new Microsoft.Maps.Location(52.298379183128596, 4.942471264136956),
 		labelOverlay: Microsoft.Maps.LabelOverlay.hidden
 	});
+	clickLocationInfo();
+	render(generateTestSet());
 }
 
 function clickRandom() {
@@ -64,7 +72,7 @@ function makeImageRequest(credentials) {
 	var lat = map.getCenter().latitude;
 	var lon = map.getCenter().longitude;
 	var link = "http://dev.virtualearth.net/REST/v1/Imagery/Map/Aerial/"+lat+","+lon+"/16?mapSize=" + mapWidth + "," + mapHeight +"&key=" + credentials;
-	socket.emit('crop', link);
+	socket.emit('crop', {link, patchDim});
 }
 
 function clickLocationInfo(credentials) {
@@ -96,7 +104,7 @@ function locationCallback(result) {
 	if (typeof result.resourceSets[0].resources[0] !== 'undefined') {
 		var location = result.resourceSets[0].resources[0].name;
 
-		$("#location_name").text("Location: " + location);
+		$("#header h2").text(location);
 		socket.emit('location', location)
 	}
 }
@@ -143,13 +151,10 @@ function render(protocol) {
 	var widthSteps = width/patchDimHalf;
 	var heightSteps = height/patchDimHalf;
 
-	var leftTopX = parseInt($('#container').css('margin-left'));
-	var leftTopY = parseInt($('#container').css('margin-top'));
-
 	for(i = 0; i < heightSteps-1; i++) {
 		for(j = 0; j < widthSteps; j++) {
-			var x = j * patchDimHalf + leftTopX;
-			var y = i * patchDimHalf + leftTopY;
+			var x = j * patchDimHalf;
+			var y = i * patchDimHalf;
 			renderDiv(x,y,label2Color[extractFirstLabel(array)]);
 		}
 	}
@@ -162,6 +167,33 @@ function extractFirstLabel(array) {
 }
 
 function renderDiv(x, y,color) {
-	var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).css('border-color',color);
-	$('body').append(div);
+	var div = $('<div>', {class: 'labelClass'}).css('margin-left',x).css('margin-top',y).addClass('border-' + color);
+	$('#grid').append(div);
 }
+
+// Click on divs
+function restore() {
+	$('.border-red').css('border-color','red');
+	$('.border-blue').css('border-color','blue');
+	$('.border-yellow').css('border-color','yellow');
+}
+
+function redClick() {
+	restore();
+	$('.border-blue').css('border-color','gray');
+	$('.border-yellow').css('border-color','gray');
+}
+
+function blueClick() {
+	restore();
+	$('.border-red').css('border-color','gray');
+	$('.border-yellow').css('border-color','gray');
+}
+
+function yellowClick() {
+	restore();
+	$('.border-blue').css('border-color','gray');
+	$('.border-red').css('border-color','gray');
+}
+
+
