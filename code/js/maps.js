@@ -11,6 +11,7 @@ var label2Color = {
 }
 // Establish connection to node server
 var socket = io.connect('http://localhost:8080');
+var parents;
 
 // Emit event flag to node server
 socket.emit('event');
@@ -19,6 +20,10 @@ socket.emit('event');
 socket.on('reply', function (data) {
 	console.log("Received from Node.js: " + data);
 });
+
+socket.on('parents', function (data) {
+	parents = data;
+})
 
 function onLoad() {
 	$('.border-red').click(function() { redClick(); });

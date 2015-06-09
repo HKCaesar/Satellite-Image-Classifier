@@ -48,8 +48,10 @@ socketIo.sockets.on('connection', function (socket) {
 				if(error) {
 					console.log("ERROR: ", error);
 				}
-
-				console.log(reply[645][0]);
+				else {
+					console.log("ok!");
+				}
+				socket.emit('parents', reply);
 			});
 	});
 
