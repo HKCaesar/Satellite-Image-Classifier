@@ -22,40 +22,35 @@ class RPC(object):
 	def location(self, location):
 
 	def classify(self, url, patchSize):
+		img = crop_image(url)
+
+		smallPatchId, largePatchId, parents = self.patch_map(img, patchSize)
+		patches = self.get_patches(img, patchSize)
+
+		matrix = classifyImage(img, patchSize)
+
+		serialized_matrix = serializeMatrix(matrix)
+
+		result = np.concatenate([[w, h, patchSize], serializedMatrix])
+
+		return result.tolist()
+
+	def crop_image(url):
 		file = cStringIO.StringIO(urllib.urlopen(url).read())
 		img = Image.open(file)
 		w, h = img.size
-
+		
 		# Cut off Bing logo
-		cropped = img.crop((0, 0, w, h-patchSize))
+		result img.crop((0, 0, w, h-patchSize))
 
-		smallPatchId, largePatchId, parents = self.patch_map(cropped, patchSize)
-		patches = self.get_patches(img, patchSize)
-
-		# print len(patches[0][0][0][0][0])
-
+	def serialized_matrix(self, matrix):
 		labels = []
 
-		for y in range(0, len(patches[0])):
-			for x in range(0, len(patches[0][0])):
-				labels.append(self.classifyLargePatch(patches[0][y][x]))
+		for y in range(0, matrix.shape[0]):
+			for x in range(0, matrix.shape[1]):
+				label = np.argmax(matrix[x][y])
+				labels.append(label)
 
-		#labelsSmall = {}
-
-		# for i in range(0, len(smallPatchId)):
-		# 	# Check if the small patch is in the border
-		# 	if (i in parents):
-		# 		p = parents[i]
-		# 		weightParent = [ weights[p[0]], weights[p[1]], weights[p[2]], weights[p[3]] ]
-
-		# 		labelsSmall[i] = majority_vote(smallPatchParents, weightParents)
-
-		size = [w, h-patchSize, patchSize]
-
-		return np.concatenate([size, labels]).tolist()
-
-
-		#return labelsSmall		
 
 	def majority_vote(self, patches, weightParents):
 		votes = [0] * len(patches)
