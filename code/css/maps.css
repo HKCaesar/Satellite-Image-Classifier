@@ -1,25 +1,10 @@
-#bigContainer {
-	position: absolute;
-	margin-left: 80px;
-	margin-top: 80px;
-	z-index: 1;
-}
-#container {
-	width: 850px;
-	float: left;
-}
+
 #legend {
 	padding-top: 40px;
-	float: left;
-	width: 200px;
-	height : 528px;
 	z-index:2;
-	float: right;
 }
 #map_id {
 	position: relative;
-	width : 816px;
-	height : 528px;
 	z-index:2;
 }
 #map_container {
@@ -53,16 +38,11 @@
 	height:50px;
 	z-index: 5;
 }
-.legend-title {
-	margin-left:10px;
-	margin-top:10px;
-	font-size: 25px;
-}
 .legend-item {
-	margin-left:10px;
 	padding-left:10px;
 	margin-top:10px;
 	font-size: 20px;
+	width: 100px;
 	color: white;
 }
 .border-red {
