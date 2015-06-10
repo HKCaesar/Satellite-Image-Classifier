@@ -27,7 +27,6 @@ socket.on('classify_reply', function (data) {
 		renderSmall(data);
 	}
 	else {
-		console.log(1)
 		renderLarge(data);
 	}
 })
@@ -37,6 +36,13 @@ function onLoad() {
 	$('.border-red').click(function() { redClick(); });
 	$('.border-blue').click(function() { blueClick(); });
 	$('.border-yellow').click(function() { yellowClick(); });
+	$("[name='checkbox']").bootstrapSwitch({
+		onText: 'Small', 
+		offText: 'Large', 
+		onSwitchChange: function(event, state) {
+			useSmallerGrid = state;
+		}
+	});
 }
 			
 function getMap() {
@@ -54,7 +60,7 @@ function getMap() {
 		// 100m zoom
 		zoom: 16, 
 		mapTypeId: Microsoft.Maps.MapTypeId.aerial,
-		center: new Microsoft.Maps.Location(52.298379183128596, 4.942471264136956),
+		center: new Microsoft.Maps.Location(52.308881309965585, 4.929983972606096),
 		labelOverlay: Microsoft.Maps.LabelOverlay.hidden
 	});
 	clickLocationInfo();
@@ -196,7 +202,6 @@ function renderLarge(protocol) {
 	var patchDimHalf = patchDim;
 	var widthSteps = width/patchDimHalf;
 	var heightSteps = height/patchDimHalf;
-	console.log(2)
 
 	for(i = 0; i < heightSteps; i++) {
 		for(j = 0; j < widthSteps; j++) {
@@ -205,8 +210,6 @@ function renderLarge(protocol) {
 			renderDivLarge(x,y,label2Color[extractFirstLabel(protocol)]);
 		}
 	}
-
-	console.log(3)
 
 }
 
@@ -249,11 +252,6 @@ function yellowClick() {
 	restore();
 	$('.border-blue').css('border-color','gray');
 	$('.border-red').css('border-color','gray');
-}
-
-function smallerGrid(checkbox) {
-	useSmallerGrid = checkbox.checked;
-	console.log(useSmallerGrid);
 }
 
 
