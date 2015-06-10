@@ -48,7 +48,6 @@
 	margin-top:10px;
 	font-size: 20px;
 	width: 100px;
-	color: white;
 }
 .border-red {
 	border-color : red;
@@ -60,13 +59,16 @@
 	border-color : yellow;
 }
 .red {
-	background-color: red;
+	font-size: 12px;
+	color: red;
 }
 .blue {
-	background-color: blue;
+	font-size: 12px;
+	color: blue;
 }
 .yellow {
-	background-color: yellow;
+	font-size: 12px;
+	color: yellow;
 }
 .gray {
 	background-color: gray;
@@ -87,4 +89,12 @@
 	border-width: 1px;
 	position: absolute;
 	z-index: 1000;
+}
+.category-text {
+	padding-left: 10px;
+	padding-top: 20px;
+}
+.restore-button {
+	padding-left: 30px;
+	padding-top: 10px;
 }

@@ -40,11 +40,13 @@
 				</div>
 			</div>
 			<div class="col-xs-offset-2 col-xs-2" id="legend">
-				<h3>Classes</h3>
-				<div class="legend-item red" onclick="redClick();">Forest</div>
-				<div class="legend-item blue" onclick="blueClick();">City</div>
-				<div class="legend-item yellow" onclick="yellowClick();">Water</div>
-				<div class="legend-item gray" onclick="restore();">all</div>
+				<h3>Categories</h3>
+				<div class="legend-item" onclick="redClick();"><span class="red">⬤ </span> <span class="category-text">forest</span></div>
+				<div class="legend-item" onclick="blueClick();"><span class="blue">⬤ </span> <span class="category-text">city</span></div>
+				<div class="legend-item" onclick="yellowClick();"><span class="yellow">⬤ </span> <span class="category-text">water</span></div>
+				<div class="restore-button">
+					<button class="btn btn-info btn-sm" type="button" onclick="restore()">show all</button>
+				</div>
 			</div>
 
 			
