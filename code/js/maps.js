@@ -14,6 +14,8 @@ var useSmallerGrid = false;
 var socket = io.connect('http://localhost:8080');
 var parents;
 
+var readyToClassify = false;
+
 // Emit event flag to node server
 socket.emit('event');
 
@@ -23,11 +25,13 @@ socket.on('reply', function (data) {
 });
 
 socket.on('classify_reply', function (data) {
-	if (useSmallerGrid) {
-		renderSmall(data);
-	}
-	else {
-		renderLarge(data);
+	if (readyToClassify) {
+		if (useSmallerGrid) {
+			renderSmall(data);
+		}
+		else {
+			renderLarge(data);
+		}
 	}
 })
 
@@ -72,6 +76,7 @@ function getMap() {
 }
 
 function clickRandom() {
+	readyToClassify = false;
 	$('[class^=labelClass').remove();
 	// Manually found bounding box locations
 	var minLat = 52.298379183128596;
@@ -89,6 +94,7 @@ function clickRandom() {
 }
 
 function clickClassify() {
+	readyToClassify = true
 	$('[class^=labelClass').remove();
 	var url = makeImageRequest('AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS');
 	if (useSmallerGrid) {
