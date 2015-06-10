@@ -1,6 +1,7 @@
 
 #legend {
-	padding-top: 40px;
+	margin-top: 105px;
+	margin-left: 75px;
 	z-index:2;
 }
 #map_id {
@@ -25,7 +26,12 @@
 }
 #interaction {
 	float: left;
+	margin-top: 20px;
 	width: 800px;
+}
+
+#interaction button {
+	margin-left: 10px;
 }
 #header {
 	height:50px;

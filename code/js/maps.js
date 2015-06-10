@@ -43,6 +43,10 @@ function onLoad() {
 			useSmallerGrid = state;
 		}
 	});
+
+	$(".btn").mouseup(function(){
+	    $(this).blur();
+	})
 }
 			
 function getMap() {
@@ -135,7 +139,7 @@ function locationCallback(result) {
 	if (typeof result.resourceSets[0].resources[0] !== 'undefined') {
 		var location = result.resourceSets[0].resources[0].name;
 
-		$("#header h2").text(location);
+		$("#header h3").text(location);
 		socket.emit('location', location)
 	}
 }
