@@ -188,28 +188,42 @@ The model we implement is LeCun's LeNet-1. This model uses an alternating sequen
 	\label{fig:Architecture}
 \end{figure}
 \\\\
-One of the biggest advantages of using CNN, and especially LeCun's LeNet-1 implementation, is the incorporation of backpropagation learning. Meaning that all the weights of the layers are adjusted iteratively, eliminating the need to manually create the convolution masks.
+One of the biggest advantages of using CNN, and especially LeCun's LeNet-1 implementation, is the incorporation of back-propagation learning. Meaning that all the weights of the layers are adjusted iteratively, eliminating the need to manually create the convolution masks.
 \\
 \subsection{Back-propagation}
-To train the network we have to adjust several parameters in the network. In CNN 
-
-
+To train the network we have to adjust several parameters in the network. In this research we consider back-propagation from layer output to H4 to H3. In the whole network we use the Sigmoidal activation functions which is given by:
+\begin{equation}
+f(x)=\frac{1}{1+e^{-x}} 
+\end{equation}	
+The error function is defined as:
+\begin{equation}
+E=\sum_{k} \frac{1}{2}|t_k-F_{k}|^{2}
+\end{equation}
+Where $t_k$ represent the labelled class of the training. This variable is $1$ if the corresponding class is trained and $0$ if this is not the case. Below the functions are listed in which we go from the activation of our classifier neuron to value obtained in layer H3. In these equations $r$ stands for row which is the first branch after the first convolution i.e. the total rows is equal to the amount of different feature maps in H1. $b$ stands for the amount of branches per row. $k$ stands for the amount of classes which are trained by the network.
 \begin{equation}
 \begin{split}
-	&f(x)=\frac{1}{1+e^{-x}} \\
-	&E=\sum_{k} \frac{1}{2}|t_k-F_{k}|^{2} \\
 	&F_{k}= f( x_{k}) \\
 	& x_{k}=\sum_{ij} W^{4rbk}[i,j] \; H^{4rb}[i,j] - b_{k} \\
 	&H^{4rb}[i,j]= \sum_{u,v} W^{3rb}[u,v] \; H^{3rb} [2i+u,2j+v] \\
 	&H^{3rb} [2i+u,2j+v]= f\left (x^{3rb}[2i+u,2j+v] \right) \\
-	&x^{3rb}[2i+u,2j+v]=\sum_{nm} W^{2rb}[n,m] \; H^{2rb}[n+(2i+u),m+(2j+v)] -b^{3rb}[2i+u,2j+v]
+	&x^{3rb}[2i+u,2j+v]=\sum_{nm} W^{2rb}[n,m] \; H^{2rb}[n+(2i+u),m+(2j+v)] -b^{3rb}
 \end{split}
 \end{equation}
-In these equations $r$ stands for row which is the first branch after the first convolution i.e. the total rows is equal to the amount of different feature maps in H1. $b$ stands for the amount of branches per row. 
+From these equations we can calculate the update-rules for back-propagation. This is done by applying the gradient descent method in which we calculate the derivatives of out error function. The update-rule consists of the derivative with respect to the parameter we want to update with some 
 
 \begin{equation}
-\Delta W^{4rbk}[i,j]= \sum_{k} - \eta \frac{dE}{d F_{k}} \frac{dF_{k}}{dx_{k}} \frac{dx_{k}}{dW^{4rbk}[i,j]}
+\begin{split}
+\Delta W^{4rbk}[i,j]&= \sum_{k} - \eta \frac{dE}{d F_{k}} \frac{dF_{k}}{dx_{k}} \frac{dx_{k}}{dW^{4rbk}[i,j]} \\
+&= \sum_{k} \eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} \frac{dx_{k}}{dW^{4rbk}[i,j]} \\
+&= \eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} H^{4rb}[i,j]
+\end{split}
 \end{equation}
+\begin{equation}
+\begin{split}
+\Delta b_{k}= - \eta \frac{dE}{d F_{k}} \frac{dF_{k}}{dx_{k}} \frac{dx_{k}}{b_{k}}=\eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} (-1)
+\end{split}
+\end{equation}
+
 \begin{small}
 \begin{equation}
 \begin{split}
@@ -220,38 +234,59 @@ In these equations $r$ stands for row which is the first branch after the first 
 	\sum_{uv}\frac{dH^{4rb}[i,j]}{d H^{3rb} [2i+u,2j+v]} 
 	\frac{d H^{3rb} [2i+u,2j+v]}{d x^{3rb}[2i+u,2j+v]}
 	\sum_{nm}\frac{d x^{3rb}[2i+u,2j+v]}{d W^{2rb}[n,m]} \\
-	&\Delta b^{3rb}[2i+u,2j+v] =\\
+	&=\sum_{k} \sum_{ij} \sum_{uv} \sum_{nm}  \eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} W^{4rbk}[i,j]  W^{3rb}[u,v] \frac{e^{-x^{3rb}[2i+u,2j+v]}}{(1+e^{-x^{3rb}[2i+u,2j+v]})^2} \\
+	 &H^{2rb} [n+(2i+u),m+(2j+v)]
+\end{split}
+\end{equation}
+\begin{equation}
+\begin{split}
+	&\Delta b^{3rb} =\\
 	&\sum_{k} - \eta  \frac{dE}{dF_{k}} 
 	\frac{dF_{k}}{dx_{k}} 
 	\sum_{ij} \frac{dx_{k}}{dy^{4rb}[i,j]} 
 	\sum_{uv}\frac{dy^{4rb}[i,j]}{d y^{3rb} [2i+u,2j+v]} 
 	\frac{d y^{3rb} [2i+u,2j+v]}{d x^{3rb}[2i+u,2j+v]}
-	\frac{d x^{3rb}[2i+u,2j+v]}{d b^{3rb}[2i+u,2j+v]}
+	\frac{d x^{3rb}[2i+u,2j+v]}{d b^{3rb}} \\
+	&=\sum_{k} \sum_{ij} \sum_{uv} \sum_{nm}  \eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} W^{4rbk}[i,j]  W^{3rb}[u,v] \frac{e^{-x^{3rb}[2i+u,2j+v]}}{(1+e^{-x^{3rb}[2i+u,2j+v]})^2} (-1)
 \end{split}
 \end{equation}
 \end{small}
+\begin{small}
+\begin{equation}
+\end{equation}
+\end{small}
+
+
+
+
+
 
 \chapter{Results and Discussion}
 In the first phase of our research we made a convolutional neural network based on LeNet-1. We experimented with different convolution kernels in the first layer (H1) of the network and differed the amount of branches in the third layer (H3). We started with manually chosen convolution kernels for both layers H1 and H3. We began with input patches of 50 x 50 followed by a convolution kernel of 5x5 resulting in a feature map of dimensions 46x46. Next, sub-sampling with a dimension reduction of 2 results in a feature map of dimension 23x23. Again we did different 4x4 convolution kernel operation creating branches in H3 resulting in 20x20 feature maps. Sub-sampling with a dimension reduction of 5 resulted in an 4x4 output map. These outputmaps are then connected to two diffent classifcation neurons for Forest and City. \\\\
-We used the Sigmoid function as activation function only for our classifaction-neurons. Thus, no activation functions were used earlier in the network (compared to LeNet-1). We performed back-propagation on the weights connecting the output maps with the classification neurons and biases. The first functioning results where found with 4 feature maps in H1 and 2 feature maps in H3 each. We used the convolution kernels shown in figure \ref{fig:firstFilters}. The Network was trained on structure only so no color feautures were included. 
-
+We used the Sigmoid function as activation function only for our classifaction-neurons. Thus, no activation functions were used earlier in the network (compared to LeNet-1). We performed back-propagation on the weights connecting the output maps with the classification neurons and biases. The first functioning results where found with 4 feature maps in H1 and 2 feature maps in H3 each where the network was enable to recognize some forest/city patches from an new image. These results were too poor to include in this report. We used the convolution kernels shown in figure \ref{fig:firstFilters}. The Network was trained on structure only so no color feautures were included. 
 \begin{figure}[bth!]
 	\centering
 	\includegraphics[width=0.5\textwidth]{./images/firstFilters.png}
 	\caption{The four filters used in the first stage where the CNN was able to distinguish forest and city.}
 	\label{fig:firstFilters}
 \end{figure} 
-
-In the second phase we tried to extend our classes with the class \textit{water}. We tried to investigate whether training only the last weights and biases were sufficient to train the network to classify three classes. During this phase we made some adjustments to the network. We realised that the last sub-sampling with a dimension reduction of a factor 5 would probably lead to less accuracy by the network since more information might be lost in this reduction. Although, we did no quantitative research on this hypothesis the underlaying reasoning is that in each layer of the network more generalizations are made by the network which should represent the information of your input patch. When you downsize the feature maps at the end of the network this more contained information will be lost in this sub-sampling compared with sub-sampling earlier in the network. Therefore we introduced a slightly different CNN. Now, the inputsize of the patches is 41x41. This is convolved with a 9x9 convolution kernel resulting in a 33x33 feature map. Now sub-sampling with a factor 3 is introduced reducing it to a 11x11 feature map. From this map we can branch off (H3) with a convolution operation with a 4x4 convolution kernel resulting in a 8x8 feature map. This last map is than sub-sampled with a reduction of 2 resulting in the output map of 4x4. In this way we presume that the network makes better generalization than the earlier network. 
 \\\\
-Also, in this new architecture the first convolution kernels are increased in dimension. This adjustment has been introduced due to a problem with respect to the classes \textit{forest} and \textit{water}. In turns out that these two classes are very similar in structure (see figure \ref{fig:WaterForestPatch} ). Conceivably, for the network it becomes hard to distinguish these classes because of their similarities. Therefore we increased the size of the first convolution kernels. In this way more context per pixel is included leading to larger differences in feature maps between these classes.    
+In the second phase we tried to extend our classes with the class \textit{water} or \textit{grassland}. We tried to investigate whether training only the last weights and biases were sufficient to train the network to classify three classes. During this phase we tried some adjustments to the network. We noticed that the last sub-sampling with a dimension reduction of a factor 5 could lead to problems since more information might be lost in this reduction. The underlying reasoning is that in each layer of the network more generalizations are made by the network which should represent the information of your input patch. When you downsize the feature maps at the end of the network this more contained information will be lost in this sub-sampling compared with sub-sampling earlier in the network. To test this hypothesis we trained different networks with different sub-sampling operations. Furthermore, we varied the size of the convolution kernels and the dimension of the outputmaps. 
+\\\\
+From the first runs it turned out that the networks found it hard to distinguish the classes \textit{forest} and \textit{water}. By comparing some patches of both classes it became quite evident that this distinction is hard since there structure is similar (see figure \ref{fig:WaterForestPatch} ). For this reason we included the class \textit{grassland} instead of \textit{water}. From figure \ref{fig:GrassForestPatch} we can see that these patches are less similar and thus we would expect the network to perform better on these these combination of classes.
 
 
-\begin{figure}[bth!]
+\begin{figure}[bth]
 	\centering
 	\includegraphics[width=0.5\textwidth]{./images/WaterForestPatch.jpg}
 	\caption{A forest and water patch are shown. Their similarity makes it hard for the CNN to distinguish these two classes.}
 	\label{fig:WaterForestPatch}
+\end{figure}
+\begin{figure}[bth]
+	\centering
+	\includegraphics[width=0.5\textwidth]{./images/GrassForestPatch.jpg}
+	\caption{A grassland and forest patch are shown.}
+	\label{fig:GrassForestPatch}
 \end{figure}
 
 
