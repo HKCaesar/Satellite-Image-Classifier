@@ -174,7 +174,8 @@ The image which is being acquired every time comes from the Bing Maps database. 
 For training, satellite images from the same source and practice mentioned above are drawn on a per category/label basis. Patches are acquired code-wise over those images so that for each patch it is known what category/label belongs to it.
 
 
-\section{Convolutional Neural Network}
+\chapter{Convolutional Neural Network}
+\label{chap:CNN}
 During our research phase, we encountered a variety of papers that describes the use of image classification based on Neural Networks. Most of these papers have one thing in common which is the use of Convolutional Neural Networks (CNN). Since convolution operations are widely used to extract features from images and since these operations can be represented in terms of a Neural Network these properties lead to the existence of the Convolutional Neural Networks. 
 \\\\
 In general a CNN architecture consist of multiple Convolution layers and sub-sampling layers. It depends on the architecture how these layers are followed by each other. The convolution layer is the layer which results after the convolution operator is performed by the a convolution kernel. Since the gaol is to extract general features from our input image we want the CNN to generalize. This generalization is partly released by dimension reduction. Since convolution operation reduce the dimension of our input map with $\frac{M-N+1}{M}$, where $N$ is the dimension of the convolution kernel and $M$ the dimension of the input map, we want the dimension to be reduced more quickly. This is done by dub-sampling kernels which in general 'squeeze' or average the input map with a certain dimension. This operation is equivalent to a convolution operation but with a larger step-size (convolution uses a stepsize equal to 1) and equal weights for each element in the sub-sampling kernel.
@@ -191,6 +192,7 @@ The model we implement is LeCun's LeNet-1. This model uses an alternating sequen
 One of the biggest advantages of using CNN, and especially LeCun's LeNet-1 implementation, is the incorporation of back-propagation learning. Meaning that all the weights of the layers are adjusted iteratively, eliminating the need to manually create the convolution masks.
 \\
 \subsection{Back-propagation}
+\label{sec:BP}
 To train the network we have to adjust several parameters in the network. In this research we consider back-propagation from layer output to H4 to H3. In the whole network we use the Sigmoidal activation functions which is given by:
 \begin{equation}
 f(x)=\frac{1}{1+e^{-x}} 
@@ -257,7 +259,22 @@ From these equations we can calculate the update-rules for back-propagation. Thi
 \end{small}
 
 
+\chapter{Method}
+\label{chap:method}
+The architectures of the Convolutional Neural Networks we use for this research are based on the LeNet-1 described in chapter \ref{chap:CNN}. The architectures could differ in several ways from each other. First, we can adjust the sizes and types of the first convolution kernels. Second, the dimension reduction for both pooling layers in the network can differ. The size of the second convolution kernels can be changed. And the dimension of the output map (H4) can be chosen differently. At last, the amount of classifier neurons at the end of the network can be modified but this necessarily depends on the amount of classes the network has to resolve.  It is possible to vary more parameters for these networks but this research is limited to these cases.
+\\\\
+The networks were programmed in \textit{Python}. No special packages related to Neural Networks were used such as \textit{Theano}. For the convolution operation we used a package \textit{Scipy.signals} which contains a convolution function. Furthermore, some additional packages were used for basic operations in the programme such as \textit{Numpy} and \textit{PIL}. The latter is used to import images for the root. Since we use patches to train the network we write a function which divides the imported images in patches. Each patch get the label corresponding to the class it belongs to so it can be used to train the network. The images were obtained from \textit{Bing maps}. Suitable images were gathered by selecting only places (all around the world) which contains the favoured class. A side note has to be included for the images with the class city since these images may include some tree, grassland or water patches and thus will be labelled with the class city. Most other classes forest, grassland and water does not entail this problem since a great proportion of the world purely contains these classes.
+\\\\
+In the previous chapter \ref{chap:CNN} we have seen that Convolutional Neural Networks can be used to classify images. Back-propagation is used to update the parameters to train the network. In this research we made a distinction between two types of training one in which only the weights between the output map H4 and the classifier neurons are trained including the biases on these classifier neurons. Second, a training in which the latter is trained and the parameters of the convolution kernels $W^{2rb}$ from layer H2 to H3 and their biases $b^{2rb}$ (see section \ref{sec:BP}). Since back-propagation costs al lot of computational power we have limited our research to these types of training. Of course, it is theoretically possible to use back-propagation till layer H1. For the first type of training the parameters of the second convolution kernels  $W^{2rb}$ were chosen from a random distribution. 
 
+\section{Cross-validation}
+To compare the different architectures we used cross-validation. This includes the training of the network on 90\% of the data/total amount of patches. The remaining 10\% is used to validate the performance of the network. The training was performed in three steps. In the first step the learning rates were quite high such that the network roughly learns to recognize the classes. The following steps were trainings in which the learning rates were smaller. In other words, we did not used decaying learning rates or another method. To summarize, each patch from the (90\%) training set  has been 'seen' by the network three times and each time with a different learning rate. 
+\\\\
+From the network we want to know how it performance in general and on each class. So from the cross-validation four values were subtracted general performance and the performance on each class. Since this validation is executed for three classes we obtain this four values. The values are calculated by the relative fraction of patches which were classified correctly, or:
+\begin{equation}
+	P= \frac{N_{right}}{N_{right}+ N_{wrong}}
+\end{equation}
+In which $N_{right}$ determines the number of correctly classified patches and $N_{wrong}$ the number of patches which were classified wrong. This equation is used to calculate the general performance in which we include all patches and for the performance for each class by only including the corresponding patches.
 
 
 
@@ -271,7 +288,7 @@ We used the Sigmoid function as activation function only for our classifaction-n
 	\label{fig:firstFilters}
 \end{figure} 
 \\\\
-In the second phase we tried to extend our classes with the class \textit{water} or \textit{grassland}. We tried to investigate whether training only the last weights and biases were sufficient to train the network to classify three classes. During this phase we tried some adjustments to the network. We noticed that the last sub-sampling with a dimension reduction of a factor 5 could lead to problems since more information might be lost in this reduction. The underlying reasoning is that in each layer of the network more generalizations are made by the network which should represent the information of your input patch. When you downsize the feature maps at the end of the network this more contained information will be lost in this sub-sampling compared with sub-sampling earlier in the network. To test this hypothesis we trained different networks with different sub-sampling operations. Furthermore, we varied the size of the convolution kernels and the dimension of the outputmaps. 
+In the second phase we tried to extend our classes with the class \textit{water} or \textit{grassland}. We tried to investigate whether training only the last weights and biases were sufficient to train the network to classify three classes. During this phase we tried some adjustments to the network. We noticed that the last sub-sampling with a dimension reduction of a factor 5 could lead to problems since more information might be lost in this reduction. The underlying reasoning is that in each layer of the network more generalizations are made by the network which should represent the information of your input patch. When you downsize the feature maps at the end of the network this more contained information will be lost in this sub-sampling compared with sub-sampling earlier in the network. To test this hypothesis we trained different networks with different sub-sampling operations. Furthermore, we varied the size of the convolution kernels and the dimension of the output maps as explained in chapter \ref{chap:method}.
 \\\\
 From the first runs it turned out that the networks found it hard to distinguish the classes \textit{forest} and \textit{water}. By comparing some patches of both classes it became quite evident that this distinction is hard since there structure is similar (see figure \ref{fig:WaterForestPatch} ). For this reason we included the class \textit{grassland} instead of \textit{water}. From figure \ref{fig:GrassForestPatch} we can see that these patches are less similar and thus we would expect the network to perform better on these these combination of classes.
 
@@ -287,6 +304,34 @@ From the first runs it turned out that the networks found it hard to distinguish
 	\includegraphics[width=0.5\textwidth]{./images/GrassForestPatch.jpg}
 	\caption{A grassland and forest patch are shown.}
 	\label{fig:GrassForestPatch}
+\end{figure}
+
+\section{Results: Cross-validation}
+In this part of the research we investigated how different architectures of the network performance compared to each other. This comparision is made by using cross-validation explained in chapter \ref{chap:method}. All network had similar convolution kernels for the first layer. If we used $3$ rows or convolution kernels in the first layer we used the kerneltypes shown in figure \ref{fig:3filters}. For the networks with $5$ and $7$ the kernels shown in figure \ref{fig:5filters} and \ref{fig:7filters} respectively.
+
+
+
+
+
+\begin{figure}[bth]
+	\centering
+	\includegraphics[width=0.3\textwidth]{./images/3filters.jpg}
+	\caption{The three convolution kernels used for the architectures with three rows.}
+	\label{fig:3filters}
+\end{figure}
+
+\begin{figure}[bth]
+	\centering
+	\includegraphics[width=0.5\textwidth]{./images/5filters.jpg}
+	\caption{The five convolution kernels used for the architectures with five rows.}
+	\label{fig:5filters}
+\end{figure}
+
+\begin{figure}[bth]
+	\centering
+	\includegraphics[width=0.4\textwidth]{./images/7filters.jpg}
+	\caption{The seven convolution kernels used for the architectures with seven rows.}
+	\label{fig:7filters}
 \end{figure}
 
 
