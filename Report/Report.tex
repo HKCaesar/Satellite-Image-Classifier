@@ -272,6 +272,7 @@ To compare the different architectures we used cross-validation. This includes t
 \\\\
 From the network we want to know how it performance in general and on each class. So from the cross-validation four values were subtracted general performance and the performance on each class. Since this validation is executed for three classes we obtain this four values. The values are calculated by the relative fraction of patches which were classified correctly, or:
 \begin{equation}
+\label{eq:P}
 	P= \frac{N_{right}}{N_{right}+ N_{wrong}}
 \end{equation}
 In which $N_{right}$ determines the number of correctly classified patches and $N_{wrong}$ the number of patches which were classified wrong. This equation is used to calculate the general performance in which we include all patches and for the performance for each class by only including the corresponding patches.
@@ -308,9 +309,17 @@ From the first runs it turned out that the networks found it hard to distinguish
 
 \section{Results: Cross-validation}
 In this part of the research we investigated how different architectures of the network performance compared to each other. This comparision is made by using cross-validation explained in chapter \ref{chap:method}. All network had similar convolution kernels for the first layer. If we used $3$ rows or convolution kernels in the first layer we used the kerneltypes shown in figure \ref{fig:3filters}. For the networks with $5$ and $7$ the kernels shown in figure \ref{fig:5filters} and \ref{fig:7filters} respectively.
+With equation \ref{eq:P} we calculated the performances of the networks. The classifier neuron with the highest activation value is taken to be the class of classification. If this class matches the corresponding class of the input patch the network is considered to evaluate the patch as correct else it is classified wrong. Remind, that city patches might include tree or grassland patches as well.
 
+\begin{tiny}
+\begin{center}
+	\begin{tabular}{| l |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{1cm} |r | }
+		\hline
+		Net	& Amount of rows	& Amount of branch	& Input patch size	& First Conv. Filter size	& Pooling	& Second Conv. Filter size (random)&	Pooling	H4	&BP	&Tot. Training patches	& Crossvalidation 90\%-10\% (R/W+R)	& Forest (R/W+R)&	City (R/W+R)	& Grassland (R/W+R) \\ \hline
 
-
+  \end{tabular}
+\end{center}
+\end{tiny}	
 
 
 \begin{figure}[bth]
