@@ -36,10 +36,6 @@ socket.on('classify_reply', function (data) {
 })
 
 function onLoad() {
-
-	$('.border-red').click(function() { redClick(); });
-	$('.border-blue').click(function() { blueClick(); });
-	$('.border-yellow').click(function() { yellowClick(); });
 	$("[name='checkbox']").bootstrapSwitch({
 		onText: 'Small', 
 		offText: 'Large', 
@@ -77,7 +73,7 @@ function getMap() {
 
 function clickRandom() {
 	readyToClassify = false;
-	$('[class^=labelClass').remove();
+	$('[class^=labelClass]').remove();
 	// Manually found bounding box locations
 	var minLat = 52.298379183128596;
 	var maxLat = 52.43520441347777;
@@ -95,13 +91,13 @@ function clickRandom() {
 
 function clickClassify() {
 	readyToClassify = true
-	$('[class^=labelClass').remove();
+	$('[class^=labelClass]').remove();
 	var url = makeImageRequest('AkrBJqwqx23-hEkqsxaxgZFRniylWYEI9pSSfcQz8NZQB0lToABb3ky5lra_rllS');
 	if (useSmallerGrid) {
-		socket.emit('classify_small', {url, patchDim});
+		socket.emit('classify_small', {url : url, patchDim : patchDim});
 	}
 	else {
-		socket.emit('classify_large', {url, patchDim});
+		socket.emit('classify_large', {url : url, patchDim : patchDim});
 	}
 }
 
@@ -202,6 +198,7 @@ function renderSmall(protocol) {
 			renderDivSmall(x,y,label2Color[extractFirstLabel(protocol)]);
 		}
 	}
+	addDivListeners();
 }
 
 function renderLarge(protocol) {
@@ -220,7 +217,7 @@ function renderLarge(protocol) {
 			renderDivLarge(x,y,label2Color[extractFirstLabel(protocol)]);
 		}
 	}
-
+	addDivListeners();
 }
 
 function extractFirstLabel(array) {
@@ -240,6 +237,12 @@ function renderDivLarge(x, y,color) {
 }
 
 // Click on divs
+function addDivListeners() {
+	$('.border-red').click(function() { redClick() });
+	$('.border-blue').click(function() { blueClick(); });
+	$('.border-yellow').click(function() { yellowClick(); });
+}
+
 function restore() {
 	$('.border-red').css('border-color','red');
 	$('.border-blue').css('border-color','blue');
