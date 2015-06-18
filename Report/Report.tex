@@ -4,7 +4,7 @@
 \usepackage{setspace}
 \usepackage{amssymb}
 \usepackage[fleqn]{amsmath}
-\usepackage{cite}
+\usepackage{apacite}
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{float}
@@ -15,6 +15,7 @@
 \usepackage{color}
 \usepackage{setspace}
 \usepackage{comment}
+\usepackage{url}
 \titleformat{\chapter}{\normalfont\huge}{\thechapter.}{15pt}{\huge}
 \renewcommand*{\familydefault}{\sfdefault}
 \hyphenpenalty=5000 
@@ -162,14 +163,14 @@ The impression given above in figure \ref{fig:impression} is close to what the e
 \begin{figure}[h!]
     \centering
     \includegraphics[scale=0.5]{./images/communication.jpg}
-    \caption{Communication visualization between frontend and backend.}
+    \caption{Communication visualisation between frontend and backend.}
 	\label{fig:communication}
 \end{figure}
 \noindent
 First, at the frontend, an image is acquired by the user from a database call. The image is immediately send to the backend. There, patches are extracted according to a certain protocol (specific size and sequence). The patches are classified by our Neural Network. Send back to the frontend are the results in a list according to the sequence defined by the protocol. Also a codification of the results is part of the protocol. Back at the frontend the image is made into a grid which corresponds to the size of the protocol. According to the results of the Neural Network these grid windows are coloured.
 
 \section{Dataset}
-The image which is being acquired every time comes from the Bing Maps database. A predefined size of the map with satellite view enabled, the labels turned off, no other controls or logos visible and where the hight is 100 meters is put in the frontend.  Randomly a location inside the Netherlands is generated. Now the actual image is taken from the map.
+The image which is being acquired every time comes from the Bing Maps database \cite{bing}. A predefined size of the map with satellite view enabled, the labels turned off, no other controls or logos visible and where the hight is 100 meters is put in the frontend.  Randomly a location inside the Netherlands is generated. Now the actual image is taken from the map.
 
 For training, satellite images from the same source and practice mentioned above are drawn on a per category/label basis. Patches are acquired code-wise over those images so that for each patch it is known what category/label belongs to it.
 
@@ -181,11 +182,11 @@ During our research phase, we encountered a variety of papers that describes the
 In general a CNN architecture consist of multiple Convolution layers and sub-sampling layers. It depends on the architecture how these layers are followed by each other. The convolution layer is the layer which results after the convolution operator is performed by the a convolution kernel. Since the gaol is to extract general features from our input image we want the CNN to generalize. This generalization is partly released by dimension reduction. Since convolution operation reduce the dimension of our input map with $\frac{M-N+1}{M}$, where $N$ is the dimension of the convolution kernel and $M$ the dimension of the input map, we want the dimension to be reduced more quickly. This is done by dub-sampling kernels which in general 'squeeze' or average the input map with a certain dimension. This operation is equivalent to a convolution operation but with a larger step-size (convolution uses a step size equal to 1) and equal weights for each element in the sub-sampling kernel.
 
 \section{LeNet-1}
-The model we implement is LeCun's LeNet-1. This model uses an alternating sequence of convolution and sub-sampling layers. The architecture of this network is shown in Figure \ref{fig:Architecture}. The convolution layers act as feature maps, they consist of a window of a certain size, whose pixels are trainable weights. The sub-sampling layers reduce the dimensionality of the outputs. 
+The model we implement is LeCun's LeNet-1 \cite{lenet}. This model uses an alternating sequence of convolution and sub-sampling layers. The architecture of this network is shown in Figure \ref{fig:Architecture}. The convolution layers act as feature maps, they consist of a window of a certain size, whose pixels are trainable weights. The sub-sampling layers reduce the dimensionality of the outputs. 
 \begin{figure}[h!]
     \centering
     \includegraphics[scale=0.4]{./images/Architecture_CNN.png}
-    \caption{The architecture of the CNN proposed by LeNet. H1 and H3 are the convolution layers, H2 and H4 the sub-sampling layers to reduce the dimension. \color{red}{\large{Source:}} }
+    \caption{The architecture of the CNN proposed by LeNet. H1 and H3 are the convolution layers, H2 and H4 the sub-sampling layers to reduce the dimension. }
 	\label{fig:Architecture}
 \end{figure}
 \\\\
@@ -263,7 +264,7 @@ From these equations we can calculate the update-rules for back-propagation. Thi
 \label{chap:method}
 The architectures of the Convolutional Neural Networks we use for this research are based on the LeNet-1 described in chapter \ref{chap:CNN}. The architectures could differ in several ways from each other. First, we can adjust the sizes and types of the first convolution kernels. Second, the dimension reduction for both pooling layers in the network can differ. The size of the second convolution kernels can be changed. And the dimension of the output map (H4) can be chosen differently. At last, the amount of classifier neurons at the end of the network can be modified but this necessarily depends on the amount of classes the network has to resolve.  It is possible to vary more parameters for these networks but this research is limited to these cases.
 \\\\
-The networks were programmed in \textit{Python}. No special packages related to Neural Networks were used such as \textit{Theano}. For the convolution operation we used a package \textit{Scipy.signals} which contains a convolution function. Furthermore, some additional packages were used for basic operations in the program such as \textit{Numpy} and \textit{PIL}. The latter is used to import images for the root. Since we use patches to train the network we write a function which divides the imported images in patches. Each patch get the label corresponding to the class it belongs to so it can be used to train the network. The images were obtained from \textit{Bing maps}. Suitable images were gathered by selecting only places (all around the world) which contains the favoured class. A side note has to be included for the images with the class city since these images may include some tree, grassland or water patches and thus will be labeled with the class city. Most other classes forest, grassland and water does not entail this problem since a great proportion of the world purely contains these classes.
+The networks were programmed in \textit{Python}. No special packages related to Neural Networks were used such as \textit{Theano}. For the convolution operation we used a package \textit{Scipy.signals} which contains a convolution function. Furthermore, some additional packages were used for basic operations in the program such as \textit{Numpy} and \textit{PIL}. The latter is used to import images for the root. Since we use patches to train the network we write a function which divides the imported images in patches. Each patch get the label corresponding to the class it belongs to so it can be used to train the network. The images were obtained from Bing maps \cite{bing}. Suitable images were gathered by selecting only places (all around the world) which contains the favoured class. A side note has to be included for the images with the class city since these images may include some tree, grassland or water patches and thus will be labeled with the class city. Most other classes forest, grassland and water does not entail this problem since a great proportion of the world purely contains these classes.
 \\\\
 In the previous chapter \ref{chap:CNN} we have seen that Convolutional Neural Networks can be used to classify images. Back-propagation is used to update the parameters to train the network. In this research we made a distinction between two types of training one in which only the weights between the output map H4 and the classifier neurons are trained including the biases on these classifier neurons. Second, a training in which the latter is trained and the parameters of the convolution kernels $W^{2rb}$ from layer H2 to H3 and their biases $b^{2rb}$ (see section \ref{sec:BP}). Since back-propagation costs al lot of computational power we have limited our research to these types of training. Of course, it is theoretically possible to use back-propagation till layer H1. For the first type of training the parameters of the second convolution kernels  $W^{2rb}$ were chosen from a random distribution. 
 
@@ -374,6 +375,10 @@ With equation \ref{eq:P} we calculated the performances of the networks. The cla
     \hline
   \end{tabular}
 \end{center}
+
+\bibliography{Report.bib}
+\bibliographystyle{apacite}
+
 \end{document}
 
 
