@@ -1,7 +1,6 @@
 import zerorpc
 import urllib
 import cStringIO
-import Image
 import logging
 logging.basicConfig()
 
