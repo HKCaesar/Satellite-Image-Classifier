@@ -3,12 +3,12 @@ var mapinfo;
 var mapWidth = 800;
 var mapHeight = 600;
 var patchDim = 40;
-var labels = [0, 1, 2];
+var labels = [0, 1, 2, 3];
 var label2Color = {
   0: 'red',
   1: 'blue',
   2: 'yellow',
-  3: 'purple'
+  3: 'green'
 }
 var useSmallerGrid = false;
 // Establish connection to node server
@@ -265,7 +265,7 @@ function restore() {
   $('.border-red').css('border-color', 'red');
   $('.border-blue').css('border-color', 'blue');
   $('.border-yellow').css('border-color', 'yellow');
-  $('.border-purple').css('border-color', 'purple');
+  $('.border-green').css('border-color', 'green');
 
 }
 
@@ -273,7 +273,7 @@ function redClick() {
   restore();
   $('.border-blue').css('border-color', 'gray');
   $('.border-yellow').css('border-color', 'gray');
-  $('.border-purple').css('border-color', 'gray');
+  $('.border-green').css('border-color', 'gray');
 
 }
 
@@ -281,7 +281,7 @@ function blueClick() {
   restore();
   $('.border-red').css('border-color', 'gray');
   $('.border-yellow').css('border-color', 'gray')
-  $('.border-purple').css('border-color', 'gray');
+  $('.border-green').css('border-color', 'gray');
 
 }
 
@@ -289,11 +289,11 @@ function yellowClick() {
   restore();
   $('.border-blue').css('border-color', 'gray');
   $('.border-red').css('border-color', 'gray');
-  $('.border-purple').css('border-color', 'gray');
+  $('.border-green').css('border-color', 'gray');
 
 }
 
-function purpleClick() {
+function greenClick() {
   restore();
   $('.border-red').css('border-color', 'gray');
   $('.border-blue').css('border-color', 'gray');
