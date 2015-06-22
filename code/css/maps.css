@@ -64,6 +64,9 @@
 .border-yellow {
 	border-color : yellow;
 }
+.border-purple {
+	border-color : purple;
+}
 .red {
 	font-size: 12px;
 	color: red;
@@ -76,6 +79,12 @@
 	font-size: 12px;
 	color: yellow;
 }
+
+.purple {
+	font-size: 12px;
+	color: purple;
+}
+
 .gray {
 	background-color: gray;
 }
