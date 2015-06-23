@@ -119,7 +119,7 @@ Figure \ref{fig:grid} shows how it works internally. Two grids are maintained. O
 \end{figure}
 
 \section{MoSCoW}
-Since a limited amount of time is available and we thought of quite some experiments and features that could be added, we used the MoSCoW method to get our priorities straight and focus on the most important requirements. MoSCow stands for \textit{Must have}, \textit{Should have}, \textit{Could have} and \textit{Would have}. All the requirements are labeled in these four classes.\\
+Since our time to work on this project is limited while the amount of goals we wanted to accomplish in this period were numerous, we used the MoSCoW analysis technique to get prioritize these goals and focus on the most important requirements. MoSCow stands for \textit{Must have}, \textit{Should have}, \textit{Could have} and \textit{Would have}, with the importance of each category ordered in a descending fashion. This enables us to identify core requirements which are absolutely necessary for the functionality of our implementation and in turn enables us to set up the core functionality first before focusing on the secondary objectives. All the requirements are labeled in these four classes.\\
 
 \subsection{Must have}
 Must have requirements are critical to project success. 
@@ -138,9 +138,9 @@ Requirements labeled as should have are important to book success, but not neces
 \end{itemize}
 
 \subsection{Could have}
-It would be very nice if we would be able to reach the Could have feautures, but they are not critical. 
+It would be very nice if we would be able to reach the Could have features, but they are not critical. 
 \begin{itemize}
-\item Experiment with pre-processed images (noise reduction, gradient calculations)
+\item Experiment with preprocessed images (noise reduction, gradient calculations)
 \item Analyze images on city level, so with more details present. For this purpose new classes have to be added, such as roadways, cycle paths, 	buildings, distinct vegetations etc. 
 \item Experiment with other models than the state-of-the art LeNet-1 CNN. For examples, a CNN in which Genetic Algorithms are incorporated, or implementing an Extreme Learning Machine for the training of the weights. 
 \end{itemize}
@@ -153,6 +153,24 @@ These requirements are implemented only in the most ideal situation. They are co
 \item Use the input of the users to improve the automatic classification. 
 \item Sell the software package to Google. 
 \end{itemize}
+
+\subsection{Elaboration on the design choices}
+As the name of the Must have category implies, these requirements are critical to the success of the project and as such, these requirements were all met. The CNN is designed and is trained beforehand, the resulting weights are then injected into the CNN placed on the server, used to classify the map patches. The CNN is capable of distinguishing three separate classes, with an experimental CNN capable of distinguishing four classes (further elaborated in Section \ref{sec:resultsanddiscussion}).
+A basic web interface was created, with the ability to highlight specific classes to help visualize the classification of the network.
+
+Due to time constraints, some requirements had to be modified in order to implement them or were left out altogether. The ability to upload own satellite imagery was replaced with the ability to acquire random satellite imagery of Amsterdam and its surroundings, which are in turn classified by the network. Choosing this route means that we do can worry less about content validity and security of the application.
+
+The calculation of uncertainty is possible, but the implementation of user correction in conjunction with this uncertainty was left out. This is due to time constraints and the fact that we have not implemented on-line learning, but rather let the network train off-line beforehand, making this feature obsolete.
+
+Preprocessing the images could have been implemented and would surely boost our classification results. However, the goal of this project was not to achieve a high classification performance, but rather to implement a neural network that could learn on its own what the best discriminating features of an image is.
+
+The option to classify maps on different altitude levels is not implemented, also due to time constraints. Different levels of altitude means to either have a general neural network that works on all altitudes, or having to train the network on different altitudes in order to produce multiple weight setups. Both of these options meant more time needed to develop, implement and test the new setups. 
+
+Different setups have been experimented with, which will be discussed in Section \ref{sec:resultsanddiscussion}.
+
+The would haves requirements were on a whole different level and thus are self-explanatory why they weren't implemented.
+
+
 
 \chapter{Implementation}
 A plan has been established what kind of application should come about. The previous discussion pressed for a certain kind of structure. One where a Neural Network is central to the problem to be solved. But also a frontend is needed for certain user interaction as well as an infrastructure in the backend which facilitates the communication with said frontend. This chapter discusses these aspects.
@@ -281,6 +299,7 @@ In which $N_{right}$ determines the number of correctly classified patches and $
 
 
 \chapter{Results and Discussion}
+\label{sec:resultsanddiscussion}
 In the first phase of our research we made a convolutional neural network based on LeNet-1. We experimented with different convolution kernels in the first layer (H1) of the network and differed the amount of branches in the third layer (H3). We started with manually chosen convolution kernels for both layers H1 and H3. We began with input patches of 50 x 50 followed by a convolution kernel of 5x5 resulting in a feature map of dimensions 46x46. Next, sub-sampling with a dimension reduction of 2 results in a feature map of dimension 23x23. Again we did different 4x4 convolution kernel operation creating branches in H3 resulting in 20x20 feature maps. Sub-sampling with a dimension reduction of 5 resulted in an 4x4 output map. These output maps are then connected to two different classification neurons for Forest and City. \\\\
 We used the Sigmoid function as activation function only for our classification-neurons. Thus, no activation functions were used earlier in the network (compared to LeNet-1). We performed back-propagation on the weights connecting the output maps with the classification neurons and biases. The first functioning results where found with 4 feature maps in H1 and 2 feature maps in H3 each where the network was enable to recognize some forest/city patches from an new image. These results were too poor to include in this report. We used the convolution kernels shown in figure \ref{fig:firstFilters}. The Network was trained on structure only so no color features were included. 
 \begin{figure}[bth!]
