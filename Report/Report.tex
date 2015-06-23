@@ -220,7 +220,7 @@ The error function is defined as:
 \begin{equation}
 E=\sum_{k} \frac{1}{2}|t_k-F_{k}|^{2}
 \end{equation}
-Where $t_k$ represent the labeled class of the training. This variable is $1$ if the corresponding class is trained and $0$ if this is not the case. Below the functions are listed in which we go from the activation of our classifier neuron to value obtained in layer H3. In these equations $r$ stands for row which is the first branch after the first convolution i.e. the total rows is equal to the amount of different feature maps in H1. $b$ stands for the amount of branches per row. $k$ stands for the amount of classes which are trained by the network.
+Where $t_k$ represent the labeled class of the training and $F_{k}$ is the corresponding activation of the classifier neuron . This variable is $1$ if the corresponding class is trained and $0$ if this is not the case. Below the functions are listed in which we go from the activation of our classifier neuron to value obtained in layer H3. In these equations $r$ stands for row which is the first branch after the first convolution i.e. the total rows is equal to the amount of different feature maps in H1. $b$ stands for the amount of branches per row. $k$ stands for the amount of classes which are trained by the network.
 \begin{equation}
 \begin{split}
 	&F_{k}= f( x_{k}) \\
@@ -230,8 +230,9 @@ Where $t_k$ represent the labeled class of the training. This variable is $1$ if
 	&x^{3rb}[2i+u,2j+v]=\sum_{nm} W^{2rb}[n,m] \; H^{2rb}[n+(2i+u),m+(2j+v)] -b^{3rb}
 \end{split}
 \end{equation}
-From these equations we can calculate the update-rules for back-propagation. This is done by applying the gradient descent method in which we calculate the derivatives of out error function. The update-rule consists of the derivative with respect to the parameter we want to update with some 
-
+In the above equations $i$ and $j$ are the row and colomn respectively for the elements in the output maps and end-weight matrix $ W^{4rbk}$. The superscript in the latter indicates for layer H4 and corresponding row $r$ and branch $b$. The elements $u$ and $v$ are the element over the sub-sampling kernel where $n$ and $m$ are the elements over convolution kernel $W^{2rb}$. From these equations we can calculate the update-rules for back-propagation. This is done by applying the gradient descent method in which we calculate the derivatives of the error function. The update-rule consists of the derivative with respect to the parameter we want to update.  
+\\\\
+For updating $W^{4rbk}$, also called the end-weights, we use:
 \begin{equation}
 \begin{split}
 \Delta W^{4rbk}[i,j]&= \sum_{k} - \eta \frac{dE}{d F_{k}} \frac{dF_{k}}{dx_{k}} \frac{dx_{k}}{dW^{4rbk}[i,j]} \\
@@ -239,12 +240,14 @@ From these equations we can calculate the update-rules for back-propagation. Thi
 &= \eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} H^{4rb}[i,j]
 \end{split}
 \end{equation}
+
+For updating the bias $b_{k}$ corresponding to each classifier neuron:
 \begin{equation}
 \begin{split}
 \Delta b_{k}= - \eta \frac{dE}{d F_{k}} \frac{dF_{k}}{dx_{k}} \frac{dx_{k}}{b_{k}}=\eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} (-1)
 \end{split}
 \end{equation}
-
+The updating for the elements in the convolution kernel $ W^{2rb}$ requires some more derivatives:
 \begin{small}
 \begin{equation}
 \begin{split}
@@ -255,10 +258,11 @@ From these equations we can calculate the update-rules for back-propagation. Thi
 	\sum_{uv}\frac{dH^{4rb}[i,j]}{d H^{3rb} [2i+u,2j+v]} 
 	\frac{d H^{3rb} [2i+u,2j+v]}{d x^{3rb}[2i+u,2j+v]}
 	\sum_{nm}\frac{d x^{3rb}[2i+u,2j+v]}{d W^{2rb}[n,m]} \\
-	&=\sum_{k} \sum_{ij} \sum_{uv} \sum_{nm}  \eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} W^{4rbk}[i,j]  W^{3rb}[u,v] \frac{e^{-x^{3rb}[2i+u,2j+v]}}{(1+e^{-x^{3rb}[2i+u,2j+v]})^2} \\
-	 &H^{2rb} [n+(2i+u),m+(2j+v)]
+	=&\sum_{k} \sum_{ij} \sum_{uv} \sum_{nm}  \eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} W^{4rbk}[i,j]  W^{3rb}[u,v] \frac{e^{-x^{3rb}[2i+u,2j+v]}}{(1+e^{-x^{3rb}[2i+u,2j+v]})^2} \\
+	 & H^{2rb} [n+(2i+u),m+(2j+v)]
 \end{split}
 \end{equation}
+Since there is also a bias $b^{3rb}$ present in layer H3 we have to update these weights as well:
 \begin{equation}
 \begin{split}
 	&\Delta b^{3rb} =\\
@@ -268,7 +272,7 @@ From these equations we can calculate the update-rules for back-propagation. Thi
 	\sum_{uv}\frac{dy^{4rb}[i,j]}{d y^{3rb} [2i+u,2j+v]} 
 	\frac{d y^{3rb} [2i+u,2j+v]}{d x^{3rb}[2i+u,2j+v]}
 	\frac{d x^{3rb}[2i+u,2j+v]}{d b^{3rb}} \\
-	&=\sum_{k} \sum_{ij} \sum_{uv} \sum_{nm}  \eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} W^{4rbk}[i,j]  W^{3rb}[u,v] \frac{e^{-x^{3rb}[2i+u,2j+v]}}{(1+e^{-x^{3rb}[2i+u,2j+v]})^2} (-1)
+	&=\sum_{k} \sum_{ij} \sum_{uv} \eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} W^{4rbk}[i,j]  W^{3rb}[u,v] \frac{e^{-x^{3rb}[2i+u,2j+v]}}{(1+e^{-x^{3rb}[2i+u,2j+v]})^2} (-1)
 \end{split}
 \end{equation}
 \end{small}
@@ -280,21 +284,13 @@ From these equations we can calculate the update-rules for back-propagation. Thi
 
 \chapter{Method}
 \label{chap:method}
-The architectures of the Convolutional Neural Networks we use for this research are based on the LeNet-1 described in chapter \ref{chap:CNN}. The architectures could differ in several ways from each other. First, we can adjust the sizes and types of the first convolution kernels. Second, the dimension reduction for both pooling layers in the network can differ. The size of the second convolution kernels can be changed. And the dimension of the output map (H4) can be chosen differently. At last, the amount of classifier neurons at the end of the network can be modified but this necessarily depends on the amount of classes the network has to resolve.  It is possible to vary more parameters for these networks but this research is limited to these cases.
+The architectures of the Convolutional Neural Networks we use for this research are based on the LeNet-1 described in chapter \ref{chap:CNN}. The architectures could differ in several ways from each other. First, we can adjust the sizes and types of the first convolution kernels. Second, the dimension reduction for both sub-sampling kernels can differ. The size of the second convolution kernels can be changed and the dimension of the output map (H4) can be chosen differently. At last, the amount of classifier neurons at the end of the network can be modified but this necessarily depends on the amount of classes the network has to resolve.  It is possible to vary more parameters for these networks but this research is limited to these cases. 
+\\\\
+To investigate which architectures are sufficient to use for our application a few architectures were explored. The various parameters as described above are changed resulting in different network designs. These networks can be trained in two different ways: back-propagation on the classifier neuron biases ($b_{k}$) and end-weight ($ W^{4rb}$) or the latter and further back-propagation where also the weights of the second convolutional kernels are trained ($ W^{2rb} $)and their biases ($b^{3rb}$). First we investigated how the networks perform when we only do the first type of training since further back-propagation will be more computationally expensive. Their performance is measured with a method based on cross-validation (see appendix \ref{app:DiffentArchitectures}). 
+\\\\
+\textbf{Marjo: hier jouw stuk over hoe jij je resultaten hebt verkregen. En ook iets over die RGB brightness. }
 \\\\
 The networks were programmed in \textit{Python}. No special packages related to Neural Networks were used such as \textit{Theano}. For the convolution operation we used a package \textit{Scipy.signals} which contains a convolution function. Furthermore, some additional packages were used for basic operations in the program such as \textit{Numpy} and \textit{PIL}. The latter is used to import images for the root. Since we use patches to train the network we write a function which divides the imported images in patches. Each patch get the label corresponding to the class it belongs to so it can be used to train the network. The images were obtained from Bing maps \cite{bing}. Suitable images were gathered by selecting only places (all around the world) which contains the favoured class. A side note has to be included for the images with the class city since these images may include some tree, grassland or water patches and thus will be labeled with the class city. Most other classes forest, grassland and water does not entail this problem since a great proportion of the world purely contains these classes.
-\\\\
-In the previous chapter \ref{chap:CNN} we have seen that Convolutional Neural Networks can be used to classify images. Back-propagation is used to update the parameters to train the network. In this research we made a distinction between two types of training one in which only the weights between the output map H4 and the classifier neurons are trained including the biases on these classifier neurons. Second, a training in which the latter is trained and the parameters of the convolution kernels $W^{2rb}$ from layer H2 to H3 and their biases $b^{2rb}$ (see section \ref{sec:BP}). Since back-propagation costs al lot of computational power we have limited our research to these types of training. Of course, it is theoretically possible to use back-propagation till layer H1. For the first type of training the parameters of the second convolution kernels  $W^{2rb}$ were chosen from a random distribution. 
-
-\section{Cross-validation}
-To compare the different architectures we used cross-validation. This includes the training of the network on 90\% of the data/total amount of patches. The remaining 10\% is used to validate the performance of the network. The training was performed in three steps. In the first step the learning rates were quite high such that the network roughly learns to recognize the classes. The following steps were trainings in which the learning rates were smaller. In other words, we did not used decaying learning rates or another method. To summarize, each patch from the (90\%) training set  has been 'seen' by the network three times and each time with a different learning rate. 
-\\\\
-From the network we want to know how it performance in general and on each class. So from the cross-validation four values were subtracted general performance and the performance on each class. Since this validation is executed for three classes we obtain this four values. The values are calculated by the relative fraction of patches which were classified correctly, or:
-\begin{equation}
-\label{eq:P}
-	P= \frac{N_{right}}{N_{right}+ N_{wrong}}
-\end{equation}
-In which $N_{right}$ determines the number of correctly classified patches and $N_{wrong}$ the number of patches which were classified wrong. This equation is used to calculate the general performance in which we include all patches and for the performance for each class by only including the corresponding patches.
 
 
 
@@ -309,59 +305,25 @@ We used the Sigmoid function as activation function only for our classification-
 	\label{fig:firstFilters}
 \end{figure} 
 \\\\
-In the second phase we tried to extend our classes with the class \textit{water} or \textit{grassland}. We tried to investigate whether training only the last weights and biases were sufficient to train the network to classify three classes. During this phase we tried some adjustments to the network. We noticed that the last sub-sampling with a dimension reduction of a factor 5 could lead to problems since more information might be lost in this reduction. The underlying reasoning is that in each layer of the network more generalizations are made by the network which should represent the information of your input patch. When you downsize the feature maps at the end of the network this more contained information will be lost in this sub-sampling compared with sub-sampling earlier in the network. To test this hypothesis we trained different networks with different sub-sampling operations. Furthermore, we varied the size of the convolution kernels and the dimension of the output maps as explained in chapter \ref{chap:method}.
+In the second phase we tried to extend our classes with the class \textit{water} or \textit{grassland}. From the first runs it turned out that the networks found it hard to distinguish the classes \textit{forest} and \textit{water}. By comparing some patches of both classes it became quite evident that this distinction is hard since there structure is similar (see figure \ref{fig:WaterForestPatch} ). For this reason we included the class \textit{grassland} instead of \textit{water}. From figure \ref{fig:GrassForestPatch} we can see that these patches are less similar and thus we would expect the network to perform better on these these combination of classes.
 \\\\
-From the first runs it turned out that the networks found it hard to distinguish the classes \textit{forest} and \textit{water}. By comparing some patches of both classes it became quite evident that this distinction is hard since there structure is similar (see figure \ref{fig:WaterForestPatch} ). For this reason we included the class \textit{grassland} instead of \textit{water}. From figure \ref{fig:GrassForestPatch} we can see that these patches are less similar and thus we would expect the network to perform better on these these combination of classes.
-
-
+During this phase we tried to investigate whether training only the end-weights ($W^{4rb}$) and biases ($b_{k}$) were sufficient to train the network to classify three classes. We experimented with different types of architectures for the networks. We trained nine networks with different sub-sampling operations. Also the sizes of the convolution kernels and the dimension of the output maps were varied. Each network was trained two times to get an idea how its performance is. To get statistical significance we should train each network multiple times but due to high computational costs we limited the amount of trainings per network at two. To see the results and the method used to evaluate these performance the reader is referred to appendix \ref{app:DiffentArchitectures}. Although, the results can not be statistically justified we can obtain some properties from these findings. By comparison of network 1 with network 8 an increase of the amount of trainable parameters does not directly results in better performance. Network 1 consists of 189 trainable weights (excluding the bias) and Network 8 has 192  trainable weights but the performance of the latter is much lower. The same holds for a comparison of Network 2 with Network 3 (or Network 6). However, the overall performance of networks with more trainable weights perform better. Furthermore, it also turns out some Networks are able to recognize almost $75$ \% correct (see Networks 4,7 and 9 ). 
+\\\\
+\textbf{Marjo: Justification waarom we RGB values hebben meegenomen? En jouw resultaten uiteraard. }
 \begin{figure}[bth]
 	\centering
 	\includegraphics[width=0.5\textwidth]{./images/WaterForestPatch.jpg}
 	\caption{A forest and water patch are shown. Their similarity makes it hard for the CNN to distinguish these two classes.}
 	\label{fig:WaterForestPatch}
 \end{figure}
-\begin{figure}[bth]
+\begin{figure}[bth!]
 	\centering
 	\includegraphics[width=0.5\textwidth]{./images/GrassForestPatch.jpg}
 	\caption{A grassland and forest patch are shown.}
 	\label{fig:GrassForestPatch}
 \end{figure}
+\\\\
 
-\section{Results: Cross-validation}
-In this part of the research we investigated how different architectures of the network performance compared to each other. This comparison is made by using cross-validation explained in chapter \ref{chap:method}. All network had similar convolution kernels for the first layer. If we used $3$ rows or convolution kernels in the first layer we used the kernel types shown in figure \ref{fig:3filters}. For the networks with $5$ and $7$ the kernels shown in figure \ref{fig:5filters} and \ref{fig:7filters} respectively.
-With equation \ref{eq:P} we calculated the performances of the networks. The classifier neuron with the highest activation value is taken to be the class of classification. If this class matches the corresponding class of the input patch the network is considered to evaluate the patch as correct else it is classified wrong. Remind, that city patches might include tree or grassland patches as well.
-
-\begin{tiny}
-\begin{center}
-	\begin{tabular}{| l |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{1cm} |r | }
-		\hline
-		Net	& Amount of rows	& Amount of branch	& Input patch size	& First Conv. Filter size	& Pooling	& Second Conv. Filter size (random)&	Pooling	H4	&BP	&Tot. Training patches	& Crossvalidation 90\%-10\% (R/W+R)	& Forest (R/W+R)&	City (R/W+R)	& Grassland (R/W+R) \\ \hline
-
-  \end{tabular}
-\end{center}
-\end{tiny}	
-
-
-\begin{figure}[bth]
-	\centering
-	\includegraphics[width=0.3\textwidth]{./images/3filters.jpg}
-	\caption{The three convolution kernels used for the architectures with three rows.}
-	\label{fig:3filters}
-\end{figure}
-
-\begin{figure}[bth]
-	\centering
-	\includegraphics[width=0.5\textwidth]{./images/5filters.jpg}
-	\caption{The five convolution kernels used for the architectures with five rows.}
-	\label{fig:5filters}
-\end{figure}
-
-\begin{figure}[bth]
-	\centering
-	\includegraphics[width=0.4\textwidth]{./images/7filters.jpg}
-	\caption{The seven convolution kernels used for the architectures with seven rows.}
-	\label{fig:7filters}
-\end{figure}
 
 
 \chapter{Time schedule}
@@ -395,8 +357,154 @@ With equation \ref{eq:P} we calculated the performances of the networks. The cla
   \end{tabular}
 \end{center}
 
+\chapter{Personal Contributions}
+
+\subsection{Michiel Bongaerts}
+During the project my focus was on the implementation of the Convolutional Neural Networks in Python. I programmed the first design of our CNN based on LeNet-1 with only Back-propagation in the end-weights. I gathered images from Bing maps for the different classes to train this CNN on. It turned out that this first design (qualitatively) worked for unknown input images where it could distinguish between forest and city. This results encouraged us to continue with the CNN architectures. Next, I focussed on the Back-propagation algorithm in which the CNN was able to Back-propagate further till the wieghts of the second Convolution kernel. This algorithm turned out to be very computational expensive which stagnated my research on this. I continued to evaluate different kinds of architures. 
+
+
 \bibliography{Report.bib}
 \bibliographystyle{apacite}
+
+
+
+\begin{appendices}
+	
+\chapter{Evaluation of different CNN achitectures}
+\label{app:DiffentArchitectures}
+To compare the different architectures we used a cross-validation based method. This includes the training of the network on 90\% of the data/total amount of patches. The remaining 10\% is used to validate the performance of the network. The training was performed in three steps. In the first step the learning rates were quite high such that the network roughly learns to recognize the classes. The following steps were trainings in which the learning rates were smaller. In other words, we did not used decaying learning rates or another method. To summarize, each patch from the (90\%) training set  has been 'seen' by the network three times and each time with a different learning rate. 
+\\\\
+From the network we want to know how it performance in general and on each class. So from the cross-validation the following values were subtracted: general performance and the performance on each class. Since this validation is executed for three classes we obtain this four values. The values are calculated by the relative fraction of patches which were classified correctly, or:
+\begin{equation}
+\label{eq:P}
+P= \frac{N_{right}}{N_{right}+ N_{wrong}}
+\end{equation}
+In which $N_{right}$ determines the number of correctly classified patches and $N_{wrong}$ the number of patches which were classified wrong. This equation is used to calculate the general performance in which we include all patches and for the performance for each class by only including the corresponding patches.
+\\\\
+All networks had similar convolution kernels for the first layer. If we used $3$ rows or convolution kernels in the first layer we used the kernel types shown in figure \ref{fig:3filters}. For the networks with $5$ and $7$ the kernels shown in figure \ref{fig:5filters} and \ref{fig:7filters} respectively. The weights for the second convolution kernels were drawn from a uniform distribution and therefore these kernels differed for each network. With equation \ref{eq:P} the performances of the networks was calculated. The classifier neuron with the highest activation value is taken to be the class of classification. If this class matches the corresponding class of the input patch the network is considered to evaluate the patch as correct else it is classified wrong. Remind, that city patches might include tree or grassland patches as well.
+
+\begin{tiny}
+	\begin{center}
+		\begin{tabular}{| l |p{0.5cm} |p{0.5cm} |p{0.5cm} |p{0.75cm} |p{0.7cm} |p{0.7cm} |p{0.75cm} |p{0.75cm} |p{0.75cm} |p{0.5cm} |p{0.8cm} |p{0.8cm} |p{0.8cm} |r | }
+			\hline
+			Net	& Amount of rows	& Amount of branch	& Input patch size	& First Conv. Filter size	& Pooling	& Second Conv. Filter size (random)&	Pooling	&H4	& Tot. end-weights	&Tot. Training patches	& Cross validation 90\%-10\% & Forest &	City	& Grassland \\ \hline
+			
+			1&	7&	3&	40x40&	11x11& 	3&	5x5&	2&	3x3&	189&	21560&	0.637755102&	0.767908309&	0.759312321&	0.406578947 \\ \hline
+			1&	7&	3&	40x40&	11x11&	3&	5x5&	2&	3x3&	189&	21560&	0.720315399&	0.745123537&	0.853963839&	0.547904192\\ \hline
+			2&	5&	3&	40x40&	11x11& 	3&	5x5&	2&	3x3&	135&	21560&	0.674397032&	0.754772394&	0.805359661&	0.481723238\\ \hline
+			2&	5&	3&	40x40&	11x11& 	3&	5x5&	2&	3x3&	135&	21560&	0.701762523&	0.833333333&	0.860110803&	0.415977961\\ \hline
+			3&	5&	3&	40x40&	9x9&	4&	3x3&	2&	3x3&	135&	21560&	0.548701299&	0.874643875&	0.587412587&	0.201623816\\ \hline
+			3&	5&	3&	40x40&	9x9&	4&	3x3&	2&	3x3&	135&	21560&	0.499072356&	0.684950774&	0.686882934&	0.138586957\\ \hline
+			4&	5&	3&	40x40&	9x9&	2&	5X5&	3&	4x4&	240&	21560&	0.737012987&	0.610054348&	0.893767705&	0.712885154\\ \hline
+			4&	5&	3&	40x40&	9x9&	2&	5X5&	3&	4x4&	240&	21560&	0.682745826&	0.709589041&	0.72739726&	0.607758621\\ \hline
+			5&	7&	2&	40x40&	9x9&	2&	5X5&	3&	4x4&	224&	21560&	0.721243043&	0.630344828&	0.83862069&	0.694050992\\ \hline
+			5&	7&	2&	40x40&	9x9&	2&	5X5&	3&	4x4&	224&	21560&	0.694805195&	0.711724138&	0.827586207&	0.541076487\\ \hline
+			6&	5&	3&	40x40&	9x9&	2&	5X5&	4&	3x3&	135&	21560&	0.695269017&	0.795549374&	0.820054945&	0.465444288\\ \hline
+			6&	5&	3&	40x40&	9x9&	2&	5X5&	4&	3x3&	135&	21560&	0.634972171&	0.819559229&	0.833806818&	0.257575758\\ \hline
+			7&	5&	3&	40x40&	11x11& 	2&	4x4&	3&	4x4&	240&	21560&	0.700371058&	0.596707819&	0.781466113&	0.724431818\\ \hline
+			7&	5&	3&	40x40&	11x11& 	2&	4x4&	3&	4x4&	240&	21560&	0.74257885&		0.705163043&	0.865671642&	0.650073206\\ \hline
+			8&	3&	4&	40x40&	9x9&	2&	5x5&	3&	4x4&	192&	21560&	0.567717996&	0.351198872&	0.716378162&	0.627873563\\ \hline
+			8&	3&	4&	40x40&	9x9&	2&	5x5&	3&	4x4&	192&	21560&	0.517625232&	0.066390041&	0.701828411&	0.788088643\\ \hline
+			9&	5&	3&	40x40&	11x11& 	2&	8x8&	2&	4x4&	240&	21560&	0.736549165&	0.642487047&	0.848354793&	0.728467153\\ \hline
+			9&	5&	3&	40x40&	11x11& 	2&	8x8&	2&	4x4&	240&	21560&	0.728200371&	0.720505618&	0.863699583&	0.60137931 \\ \hline
+			
+			
+		\end{tabular}
+	\end{center}
+\end{tiny}	
+
+
+\begin{figure}[bth!]
+	\centering
+	\includegraphics[width=0.3\textwidth]{./images/3filters.jpg}
+	\caption{The three convolution kernels used for the architectures with three rows.}
+	\label{fig:3filters}
+\end{figure}
+
+\begin{figure}[bth!]
+	\centering
+	\includegraphics[width=0.5\textwidth]{./images/5filters.jpg}
+	\caption{The five convolution kernels used for the architectures with five rows.}
+	\label{fig:5filters}
+\end{figure}
+
+\begin{figure}[bth!]
+	\centering
+	\includegraphics[width=0.4\textwidth]{./images/7filters.jpg}
+	\caption{The seven convolution kernels used for the architectures with seven rows.}
+	\label{fig:7filters}
+\end{figure}
+
+	
+	
+\chapter{Code CNN}
+\begin{verbatim}
+from itertools import product
+right=np.zeros((3))
+wrong=np.zeros((3))
+###### Chooses patch and defines label #####
+for PP in range(0,int(np.round(len(Sequence)*0.9))):
+    # 1 has to be changed to the number of training data
+    SS=Sequence[PP]
+    if SS<N_F:
+        Class_label=np.array([1,0,0])
+        inputPatch=Patches_F[SS]
+    elif(SS>=N_F) and (SS<(N_F+N_C)):
+        Class_label=np.array([0,1,0])
+        inputPatch=Patches_C[SS-N_F]
+    elif(SS>=N_F+N_C):
+        Class_label=np.array([0,0,1])
+        inputPatch=Patches_W[SS-N_F-N_C]
+    else:continue
+
+    ### Layer 1 ###
+    H1=[]
+    H2=[]
+    H3=[[np.zeros((6,6)) for b in range(0,N_branches)] for r in range(0,len(C1))]
+    H4=[[np.zeros((3,3)) for b in range(0,N_branches)] for r in range(0,len(C1))]
+    I_H3=np.ones((6,6))
+    x=np.zeros(ClassAmount)
+    f=np.zeros(ClassAmount)
+    #learning rates
+    n_bias=1*10**-4
+    n_W=1*10**-5
+    n_C2=1*10**-4
+    n_H3_bias=1*10**-5
+
+
+    for r in range (0, len(C1)):
+        H1.append(sig.convolve(inputPatch, C1[r], 'valid'))
+        H2.append(Pool(H1[r], P12))
+        for b in range(0,N_branches):
+            H3[r][b]=Sigmoid(sig.convolve(H2[r], C2[r][b],'valid')-H3_bias[r][b]*I_H3)
+            H4[r][b]=Pool(H3[r][b],P34)
+
+    for k in range(0,ClassAmount):
+        for r in range (0, len(C1)):
+            for b in range(0,N_branches):
+               x[k]=x[k]+np.inner(H4[r][b].flatten(),W[r][b,k].flatten())
+        f[k]=Sigmoid(x[k]-bias[k])
+
+    ###### Back-propagation #####
+    for k in range(0, ClassAmount):
+        bias[k]=bias[k]-n_bias*(Class_label[k]-f[k])
+        for r in range (0, len(C1)):
+            for b in range(0,N_branches):
+            W[r][b,k]=W[r][b,k]+n_W*(Class_label[k]-f[k])*H4[r][b]
+            for i, j, u, v, n, m in product(range(0,3), range(0,3), range(0,2), range(0,2), range(0,len(C2[0][0])), range(0,len(C2[0][0]))):
+                C2[r][b,n,m]=C2[r][b,n,m]+n_C2*(Class_label[k]-f[k])*W[r][b,k,i,j]*H2[r][n+(2*j+u),m+(2*j+v)] #*SigmoidPrime(x_H3[r][b][2*j+u,2*j+v])
+                H3_bias[r][b]=H3_bias[r][b]-n_H3_bias*(Class_label[k]-f[k])*W[r][b,k,i,j] #*SigmoidPrime(x_H3[r][b][2*j+u,2*j+v])
+
+
+
+	
+\end{verbatim}
+\end{appendices}
+
+
+
+
+
 
 \end{document}
 
