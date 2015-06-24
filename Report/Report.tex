@@ -87,11 +87,8 @@ Maniek \textsc{Santokhi}
 
 \chapter{Introduction}
 
-Mapping the world around us has always been a human endeavour to advance economical output. A better understanding of the places around us makes for more efficient traveling and exploitation of the land. However, it has always been a very slow and tedious process to produce these maps, something technology has not changed just yet.
+Mapping the world around us has always been a human endeavour to advance economical output. A better understanding of the places around us makes for more efficient traveling and exploitation of the land. However, it has always been a very slow and tedious process to produce these maps, something technology has not changed just yet. A new opportunity has arisen with the arrival of satellite imagery and an ever increasing amount of computational power. An opportunity where this mapping can be done automatically so that this tedious and slow job can be processed even more quickly and perhaps more accurately. It is with this in mind we further analyse any possibilities.\\
 
-A new opportunity has arisen with the arrival of satellite imagery and an ever increasing amount of computational power. An opportunity where this mapping can be done automatically so that this tedious and slow job can be processed even more quickly and perhaps more accurately. It is with this in mind we further analyse any possibilities.\\
-\\
-This paper proposes an update. Now a more straightforward approach has been chosen in which the emphasis lies on the actual Neural Network rather than the conversion of interpreted images to vector graphic maps. The new approach deals with image patches rather than pixels. This document discusses the newly acquired concept with a list of features and the actual implementation details. Also an updated schedule will be presented. 
 
 \chapter{Concept}
 Earlier attempts to conceptualise the idea to automate map making resulted in a proposal that too heavily focused on the actual map creation rather than the classification. For a Neural Network course this was deemed not befitting enough. The plan was also quite far reaching to start with. Thoughts were put into downscaling this ambitious plan. We played around a bit and came up with a new concept which will be discussed in this chapter. Firstly, an impression is given how the end user interacts with our system. This will lay the groundwork for how the Neural Network will be constructed. Secondly through the principles of MoSCoW a flexible requirements list is established. Actual talk about the classification is done in the subsequent chapter.
@@ -155,6 +152,8 @@ These requirements are implemented only in the most ideal situation. They are co
 \end{itemize}
 
 \subsection{Elaboration on the design choices}
+
+% Oke, ik haat echt ingesprongen stukjes tekst! Of gewoon een nieuwe alinea of gewoon doorschrijven!!! Of misschien is dit mijn fetish
 As the name of the Must have category implies, these requirements are critical to the success of the project and as such, these requirements were all met. The CNN is designed and is trained beforehand, the resulting weights are then injected into the CNN placed on the server, used to classify the map patches. The CNN is capable of distinguishing three separate classes, with an experimental CNN capable of distinguishing four classes (further elaborated in Section \ref{sec:resultsanddiscussion}).
 A basic web interface was created, with the ability to highlight specific classes to help visualize the classification of the network.
 
@@ -195,7 +194,7 @@ For training, satellite images from the same source and practice mentioned above
 
 \chapter{Convolutional Neural Network}
 \label{chap:CNN}
-During our research phase, we encountered a variety of papers that describes the use of image classification based on Neural Networks. Most of these papers have one thing in common which is the use of Convolutional Neural Networks (CNN). Since convolution operations are widely used to extract features from images and since these operations can be represented in terms of a Neural Network these properties lead to the existence of the Convolutional Neural Networks. 
+During our research phase, we encountered a variety of papers that describes the use of image classification based on Neural Networks. Most of these papers have one thing in common which is the use of Convolutional Neural Networks (CNN) \cite{Hongsheng2014} \cite{Farabet2013}. Since convolution operations are widely used to extract features from images and since these operations can be represented in terms of a Neural Network these properties lead to the existence of the Convolutional Neural Networks. 
 \\\\
 In general a CNN architecture consist of multiple Convolution layers and sub-sampling layers. It depends on the architecture how these layers are followed by each other. The convolution layer is the layer which results after the convolution operator is performed by the a convolution kernel. Since the gaol is to extract general features from our input image we want the CNN to generalize. This generalization is partly released by dimension reduction. Since convolution operation reduce the dimension of our input map with $\frac{M-N+1}{M}$, where $N$ is the dimension of the convolution kernel and $M$ the dimension of the input map, we want the dimension to be reduced more quickly. This is done by dub-sampling kernels which in general 'squeeze' or average the input map with a certain dimension. This operation is equivalent to a convolution operation but with a larger step-size (convolution uses a step size equal to 1) and equal weights for each element in the sub-sampling kernel.
 
@@ -220,7 +219,7 @@ The error function is defined as:
 \begin{equation}
 E=\sum_{k} \frac{1}{2}|t_k-F_{k}|^{2}
 \end{equation}
-Where $t_k$ represent the labeled class of the training and $F_{k}$ is the corresponding activation of the classifier neuron . This variable is $1$ if the corresponding class is trained and $0$ if this is not the case. Below the functions are listed in which we go from the activation of our classifier neuron to value obtained in layer H3. In these equations $r$ stands for row which is the first branch after the first convolution i.e. the total rows is equal to the amount of different feature maps in H1. $b$ stands for the amount of branches per row. $k$ stands for the amount of classes which are trained by the network.
+Where $t_k$ represent the labelled class of the training and $F_{k}$ is the corresponding activation of the classifier neuron . This variable is $1$ if the corresponding class is trained and $0$ if this is not the case. Below the functions are listed in which we go from the activation of our classifier neuron to weights present in layer H3. In these equations $r$ stands for row which is the first branch after the first convolution i.e. the total rows is equal to the amount of different feature maps in H1. $b$ stands for the amount of branches per row. $k$ stands for the amount of classes which are trained by the network.
 \begin{equation}
 \begin{split}
 	&F_{k}= f( x_{k}) \\
@@ -240,7 +239,6 @@ For updating $W^{4rbk}$, also called the end-weights, we use:
 &= \eta (t_{k}-F_{k})\frac{e^{-x_{k}}}{(1+e^{-x_{k}})^{2}} H^{4rb}[i,j]
 \end{split}
 \end{equation}
-
 For updating the bias $b_{k}$ corresponding to each classifier neuron:
 \begin{equation}
 \begin{split}
@@ -262,7 +260,9 @@ The updating for the elements in the convolution kernel $ W^{2rb}$ requires some
 	 & H^{2rb} [n+(2i+u),m+(2j+v)]
 \end{split}
 \end{equation}
+\end{small}
 Since there is also a bias $b^{3rb}$ present in layer H3 we have to update these weights as well:
+\begin{small}
 \begin{equation}
 \begin{split}
 	&\Delta b^{3rb} =\\
@@ -307,7 +307,7 @@ We used the Sigmoid function as activation function only for our classification-
 \\\\
 In the second phase we tried to extend our classes with the class \textit{water} or \textit{grassland}. From the first runs it turned out that the networks found it hard to distinguish the classes \textit{forest} and \textit{water}. By comparing some patches of both classes it became quite evident that this distinction is hard since there structure is similar (see figure \ref{fig:WaterForestPatch} ). For this reason we included the class \textit{grassland} instead of \textit{water}. From figure \ref{fig:GrassForestPatch} we can see that these patches are less similar and thus we would expect the network to perform better on these these combination of classes.
 \\\\
-During this phase we tried to investigate whether training only the end-weights ($W^{4rb}$) and biases ($b_{k}$) were sufficient to train the network to classify three classes. We experimented with different types of architectures for the networks. We trained nine networks with different sub-sampling operations. Also the sizes of the convolution kernels and the dimension of the output maps were varied. Each network was trained two times to get an idea how its performance is. To get statistical significance we should train each network multiple times but due to high computational costs we limited the amount of trainings per network at two. To see the results and the method used to evaluate these performance the reader is referred to appendix \ref{app:DiffentArchitectures}. Although, the results can not be statistically justified we can obtain some properties from these findings. By comparison of network 1 with network 8 we can see that similar amount of trainable weights does not correspond with similar performance. Network 1 consists of 189 trainable weights (excluding the bias) and Network 8 has 192  trainable weights but the performance of the latter is much lower. The same holds for a comparison of Network 2 with Network 3 (or Network 6). However, the overall performance of networks with more trainable weights perform better. Furthermore, it also turns out some Networks are able to recognize almost $75$ \% correct (see Networks 4,7 and 9 ). 
+During this phase we tried to investigate whether training only the end-weights ($W^{4rb}$) and biases ($b_{k}$) were sufficient to train the network to classify three classes. We experimented with different types of architectures for the networks. We trained nine networks with different sub-sampling operations. Also the sizes of the convolution kernels and the dimension of the output maps were varied. Each network was trained two times to get an idea how its performance is. To get statistical significance we should train each network multiple times but due to high computational costs we limited the amount of trainings per network at two. To see the results and the method used to evaluate these performances the reader is referred to appendix \ref{app:DiffentArchitectures}. Although, the results can not be statistically justified we can obtain some properties from these findings. By comparison of network 1 with network 8 we can see that similar amount of trainable weights does not correspond with similar performance. Network 1 consists of 189 trainable weights (excluding the bias) and Network 8 has 192  trainable weights but the performance of the latter is much lower. The same holds for a comparison of Network 2 with Network 3 (or Network 6). However, the overall performance of networks with more trainable weights perform better. Furthermore, it also turns out some Networks are able to recognize almost $75$ \% correct (see Networks 4,7 and 9 ). 
 \\\\
 \textbf{Marjo: Justification waarom we RGB values hebben meegenomen? En jouw resultaten uiteraard. }
 \begin{figure}[bth]
@@ -360,11 +360,11 @@ During this phase we tried to investigate whether training only the end-weights 
 \chapter{Personal Contributions}
 
 \subsection{Michiel Bongaerts}
-During the project my focus was on the implementation of the Convolutional Neural Networks in Python. I programmed the first design of our CNN based on LeNet-1 with only Back-propagation in the end-weights. I gathered images from Bing maps for the different classes to train this CNN on. It turned out that this first design (qualitatively) worked for unknown input images where it could distinguish between forest and city. This results encouraged us to continue with the CNN architectures. Next, I focussed on the Back-propagation algorithm in which the CNN was able to Back-propagate further till the wieghts of the second Convolution kernel. This algorithm turned out to be very computational expensive which stagnated my research on this. I continued to evaluate different kinds of architures. 
+During the project my focus was on the implementation of the Convolutional Neural Networks in Python. I programmed the first design of our CNN based on LeNet-1 with only Back-propagation in the end-weights. I gathered images from Bing maps for the different classes to train this CNN on. It turned out that this first design (qualitatively) worked for unknown input images where it could distinguish between forest and city. This results encouraged us to continue with the CNN architectures. Next, I focussed on the back-propagation algorithm in which the CNN was able to back-propagate further till the weights of the second Convolution kernel. This algorithm turned out to be very computational expensive which stagnated my research on this. I continued to evaluate different kinds of architectures. 
 
 
-\bibliography{Report.bib}
-\bibliographystyle{apacite}
+\bibliography{Report.bib}{}
+\bibliographystyle{plain}
 
 
 
@@ -438,6 +438,9 @@ All networks had similar convolution kernels for the first layer. If we used $3$
 	
 	
 \chapter{Code CNN}
+\textbf{Hier moet nog meer code komen!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!}
+
+\begin{tiny}
 \begin{verbatim}
 from itertools import product
 right=np.zeros((3))
@@ -499,6 +502,8 @@ for PP in range(0,int(np.round(len(Sequence)*0.9))):
 
 	
 \end{verbatim}
+\end{tiny}
+
 \end{appendices}
 
 
