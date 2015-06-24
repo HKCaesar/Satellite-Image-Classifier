@@ -307,7 +307,7 @@ We used the Sigmoid function as activation function only for our classification-
 \\\\
 In the second phase we tried to extend our classes with the class \textit{water} or \textit{grassland}. From the first runs it turned out that the networks found it hard to distinguish the classes \textit{forest} and \textit{water}. By comparing some patches of both classes it became quite evident that this distinction is hard since there structure is similar (see figure \ref{fig:WaterForestPatch} ). For this reason we included the class \textit{grassland} instead of \textit{water}. From figure \ref{fig:GrassForestPatch} we can see that these patches are less similar and thus we would expect the network to perform better on these these combination of classes.
 \\\\
-During this phase we tried to investigate whether training only the end-weights ($W^{4rb}$) and biases ($b_{k}$) were sufficient to train the network to classify three classes. We experimented with different types of architectures for the networks. We trained nine networks with different sub-sampling operations. Also the sizes of the convolution kernels and the dimension of the output maps were varied. Each network was trained two times to get an idea how its performance is. To get statistical significance we should train each network multiple times but due to high computational costs we limited the amount of trainings per network at two. To see the results and the method used to evaluate these performance the reader is referred to appendix \ref{app:DiffentArchitectures}. Although, the results can not be statistically justified we can obtain some properties from these findings. By comparison of network 1 with network 8 an increase of the amount of trainable parameters does not directly results in better performance. Network 1 consists of 189 trainable weights (excluding the bias) and Network 8 has 192  trainable weights but the performance of the latter is much lower. The same holds for a comparison of Network 2 with Network 3 (or Network 6). However, the overall performance of networks with more trainable weights perform better. Furthermore, it also turns out some Networks are able to recognize almost $75$ \% correct (see Networks 4,7 and 9 ). 
+During this phase we tried to investigate whether training only the end-weights ($W^{4rb}$) and biases ($b_{k}$) were sufficient to train the network to classify three classes. We experimented with different types of architectures for the networks. We trained nine networks with different sub-sampling operations. Also the sizes of the convolution kernels and the dimension of the output maps were varied. Each network was trained two times to get an idea how its performance is. To get statistical significance we should train each network multiple times but due to high computational costs we limited the amount of trainings per network at two. To see the results and the method used to evaluate these performance the reader is referred to appendix \ref{app:DiffentArchitectures}. Although, the results can not be statistically justified we can obtain some properties from these findings. By comparison of network 1 with network 8 we can see that similar amount of trainable weights does not correspond with similar performance. Network 1 consists of 189 trainable weights (excluding the bias) and Network 8 has 192  trainable weights but the performance of the latter is much lower. The same holds for a comparison of Network 2 with Network 3 (or Network 6). However, the overall performance of networks with more trainable weights perform better. Furthermore, it also turns out some Networks are able to recognize almost $75$ \% correct (see Networks 4,7 and 9 ). 
 \\\\
 \textbf{Marjo: Justification waarom we RGB values hebben meegenomen? En jouw resultaten uiteraard. }
 \begin{figure}[bth]
@@ -372,7 +372,7 @@ During the project my focus was on the implementation of the Convolutional Neura
 	
 \chapter{Evaluation of different CNN achitectures}
 \label{app:DiffentArchitectures}
-To compare the different architectures we used a cross-validation based method. This includes the training of the network on 90\% of the data/total amount of patches. The remaining 10\% is used to validate the performance of the network. The training was performed in three steps. In the first step the learning rates were quite high such that the network roughly learns to recognize the classes. The following steps were trainings in which the learning rates were smaller. In other words, we did not used decaying learning rates or another method. To summarize, each patch from the (90\%) training set  has been 'seen' by the network three times and each time with a different learning rate. 
+To compare the different architectures we used a cross-validation based method. This includes the training of the network on 90\% of the data/total amount of patches. The remaining 10\% is used to validate the performance of the network. The training was performed in three steps. In the first step the learning rates were quite high such that the network roughly learns to recognize the classes. The following steps were trainings in which the learning rates were smaller. In other words, we did not used decaying learning rates or another method. Back-propagation  was only applied to the end-weights $W^{4rb}$ and the biases $b_{k}$. To summarize, each patch from the (90\%) training set  has been 'seen' by the network three times and each time with a different learning rate. 
 \\\\
 From the network we want to know how it performance in general and on each class. So from the cross-validation the following values were subtracted: general performance and the performance on each class. Since this validation is executed for three classes we obtain this four values. The values are calculated by the relative fraction of patches which were classified correctly, or:
 \begin{equation}
@@ -389,24 +389,24 @@ All networks had similar convolution kernels for the first layer. If we used $3$
 			\hline
 			Net	& Amount of rows	& Amount of branch	& Input patch size	& First Conv. Filter size	& Pooling	& Second Conv. Filter size (random)&	Pooling	&H4	& Tot. end-weights	&Tot. Training patches	& Cross validation 90\%-10\% & Forest &	City	& Grassland \\ \hline
 			
-			1&	7&	3&	40x40&	11x11& 	3&	5x5&	2&	3x3&	189&	21560&	0.637755102&	0.767908309&	0.759312321&	0.406578947 \\ \hline
-			1&	7&	3&	40x40&	11x11&	3&	5x5&	2&	3x3&	189&	21560&	0.720315399&	0.745123537&	0.853963839&	0.547904192\\ \hline
-			2&	5&	3&	40x40&	11x11& 	3&	5x5&	2&	3x3&	135&	21560&	0.674397032&	0.754772394&	0.805359661&	0.481723238\\ \hline
-			2&	5&	3&	40x40&	11x11& 	3&	5x5&	2&	3x3&	135&	21560&	0.701762523&	0.833333333&	0.860110803&	0.415977961\\ \hline
-			3&	5&	3&	40x40&	9x9&	4&	3x3&	2&	3x3&	135&	21560&	0.548701299&	0.874643875&	0.587412587&	0.201623816\\ \hline
-			3&	5&	3&	40x40&	9x9&	4&	3x3&	2&	3x3&	135&	21560&	0.499072356&	0.684950774&	0.686882934&	0.138586957\\ \hline
-			4&	5&	3&	40x40&	9x9&	2&	5X5&	3&	4x4&	240&	21560&	0.737012987&	0.610054348&	0.893767705&	0.712885154\\ \hline
-			4&	5&	3&	40x40&	9x9&	2&	5X5&	3&	4x4&	240&	21560&	0.682745826&	0.709589041&	0.72739726&	0.607758621\\ \hline
-			5&	7&	2&	40x40&	9x9&	2&	5X5&	3&	4x4&	224&	21560&	0.721243043&	0.630344828&	0.83862069&	0.694050992\\ \hline
-			5&	7&	2&	40x40&	9x9&	2&	5X5&	3&	4x4&	224&	21560&	0.694805195&	0.711724138&	0.827586207&	0.541076487\\ \hline
-			6&	5&	3&	40x40&	9x9&	2&	5X5&	4&	3x3&	135&	21560&	0.695269017&	0.795549374&	0.820054945&	0.465444288\\ \hline
-			6&	5&	3&	40x40&	9x9&	2&	5X5&	4&	3x3&	135&	21560&	0.634972171&	0.819559229&	0.833806818&	0.257575758\\ \hline
-			7&	5&	3&	40x40&	11x11& 	2&	4x4&	3&	4x4&	240&	21560&	0.700371058&	0.596707819&	0.781466113&	0.724431818\\ \hline
-			7&	5&	3&	40x40&	11x11& 	2&	4x4&	3&	4x4&	240&	21560&	0.74257885&		0.705163043&	0.865671642&	0.650073206\\ \hline
-			8&	3&	4&	40x40&	9x9&	2&	5x5&	3&	4x4&	192&	21560&	0.567717996&	0.351198872&	0.716378162&	0.627873563\\ \hline
-			8&	3&	4&	40x40&	9x9&	2&	5x5&	3&	4x4&	192&	21560&	0.517625232&	0.066390041&	0.701828411&	0.788088643\\ \hline
-			9&	5&	3&	40x40&	11x11& 	2&	8x8&	2&	4x4&	240&	21560&	0.736549165&	0.642487047&	0.848354793&	0.728467153\\ \hline
-			9&	5&	3&	40x40&	11x11& 	2&	8x8&	2&	4x4&	240&	21560&	0.728200371&	0.720505618&	0.863699583&	0.60137931 \\ \hline
+			1&	7&	3&	40x40&	11x11& 	3&	5x5&	2&	3x3&	189&	21560&	0.638&	0.768&	0.759&	0.406 \\ \hline
+			1&	7&	3&	40x40&	11x11&	3&	5x5&	2&	3x3&	189&	21560&	0.720&	0.745&	0.854&	0.548\\ \hline
+			2&	5&	3&	40x40&	11x11& 	3&	5x5&	2&	3x3&	135&	21560&	0.674&	0.755&	0.805&	0.482\\ \hline
+			2&	5&	3&	40x40&	11x11& 	3&	5x5&	2&	3x3&	135&	21560&	0.702&	0.833&	0.860&	0.416\\ \hline
+			3&	5&	3&	40x40&	9x9&	4&	3x3&	2&	3x3&	135&	21560&	0.549&	0.875&	0.587&	0.202\\ \hline
+			3&	5&	3&	40x40&	9x9&	4&	3x3&	2&	3x3&	135&	21560&	0.499&	0.685&	0.687&	0.138\\ \hline
+			4&	5&	3&	40x40&	9x9&	2&	5X5&	3&	4x4&	240&	21560&	0.737&	0.610&	0.894&	0.713\\ \hline
+			4&	5&	3&	40x40&	9x9&	2&	5X5&	3&	4x4&	240&	21560&	0.683&	0.709&	0.727&	0.608\\ \hline
+			5&	7&	2&	40x40&	9x9&	2&	5X5&	3&	4x4&	224&	21560&	0.721&	0.630&	0.838&	0.694\\ \hline
+			5&	7&	2&	40x40&	9x9&	2&	5X5&	3&	4x4&	224&	21560&	0.695&	0.712&	0.827&	0.541\\ \hline
+			6&	5&	3&	40x40&	9x9&	2&	5X5&	4&	3x3&	135&	21560&	0.695&	0.795&	0.820&	0.465\\ \hline
+			6&	5&	3&	40x40&	9x9&	2&	5X5&	4&	3x3&	135&	21560&	0.635&	0.819&	0.833&	0.257\\ \hline
+			7&	5&	3&	40x40&	11x11& 	2&	4x4&	3&	4x4&	240&	21560&	0.700&	0.597&	0.781&	0.724\\ \hline
+			7&	5&	3&	40x40&	11x11& 	2&	4x4&	3&	4x4&	240&	21560&	0.743&	0.705&	0.866&	0.650\\ \hline
+			8&	3&	4&	40x40&	9x9&	2&	5x5&	3&	4x4&	192&	21560&	0.568&	0.351&	0.716&	0.628\\ \hline
+			8&	3&	4&	40x40&	9x9&	2&	5x5&	3&	4x4&	192&	21560&	0.518&	0.066&	0.702&	0.788\\ \hline
+			9&	5&	3&	40x40&	11x11& 	2&	8x8&	2&	4x4&	240&	21560&	0.737&	0.642&	0.848&	0.728\\ \hline
+			9&	5&	3&	40x40&	11x11& 	2&	8x8&	2&	4x4&	240&	21560&	0.728&	0.720&	0.864&	0.601 \\ \hline
 			
 			
 		\end{tabular}
