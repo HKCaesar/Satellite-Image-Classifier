@@ -370,14 +370,14 @@ During the project my focus was on the implementation of the Convolutional Neura
 I was responsible for the backend implementation, finding the right tools and setting up the communication between Python and JavaScript. Maniek and I also worked on creating an algorithm for the smaller grid patch system. Because the exact dimensions of the initial patches fed to the neural network is extremely important, simply resizing them to a smaller dimension to create a finer classification was not an option. Instead, we created the smaller grid algorithm. The smaller patches had to be linked to their 'parent' patches, allowing us to determine the label of the smaller patch by a weighted majority vote. This in turn allowed us to make a more accurate classification without being heavily dependent on the initial patch dimensions. I was also partly involved with the frontend, together with Maniek. Of course, during the project, I also discussed the architecture of the CNN and helped brainstorming, though Majorlein and Michiel did most of the heavy lifting on that side.
 
 
-\bibliography{Report.bib}{}
+\bibliography{Report}
 \bibliographystyle{apacite}
 
 
 
 \begin{appendices}
 	
-\chapter{Evaluation of different CNN achitectures}
+\chapter{Evaluation of different CNN architectures}
 \label{app:DiffentArchitectures}
 To compare the different architectures we used a cross-validation based method. This includes the training of the network on 90\% of the data/total amount of patches. The remaining 10\% is used to validate the performance of the network. The training was performed in three steps. In the first step the learning rates were quite high such that the network roughly learns to recognize the classes. The following steps were trainings in which the learning rates were smaller. In other words, we did not used decaying learning rates or another method. Back-propagation  was only applied to the end-weights $W^{4rb}$ and the biases $b_{k}$. To summarize, each patch from the (90\%) training set  has been 'seen' by the network three times and each time with a different learning rate. 
 \\\\
@@ -441,75 +441,6 @@ All networks had similar convolution kernels for the first layer. If we used $3$
 	\caption{The seven convolution kernels used for the architectures with seven rows.}
 	\label{fig:7filters}
 \end{figure}
-
-	
-	
-\chapter{Code CNN}
-\textbf{Hier moet nog meer code komen!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!}
-
-\begin{tiny}
-\begin{verbatim}
-from itertools import product
-right=np.zeros((3))
-wrong=np.zeros((3))
-###### Chooses patch and defines label #####
-for PP in range(0,int(np.round(len(Sequence)*0.9))):
-    # 1 has to be changed to the number of training data
-    SS=Sequence[PP]
-    if SS<N_F:
-        Class_label=np.array([1,0,0])
-        inputPatch=Patches_F[SS]
-    elif(SS>=N_F) and (SS<(N_F+N_C)):
-        Class_label=np.array([0,1,0])
-        inputPatch=Patches_C[SS-N_F]
-    elif(SS>=N_F+N_C):
-        Class_label=np.array([0,0,1])
-        inputPatch=Patches_W[SS-N_F-N_C]
-    else:continue
-
-    ### Layer 1 ###
-    H1=[]
-    H2=[]
-    H3=[[np.zeros((6,6)) for b in range(0,N_branches)] for r in range(0,len(C1))]
-    H4=[[np.zeros((3,3)) for b in range(0,N_branches)] for r in range(0,len(C1))]
-    I_H3=np.ones((6,6))
-    x=np.zeros(ClassAmount)
-    f=np.zeros(ClassAmount)
-    #learning rates
-    n_bias=1*10**-4
-    n_W=1*10**-5
-    n_C2=1*10**-4
-    n_H3_bias=1*10**-5
-
-
-    for r in range (0, len(C1)):
-        H1.append(sig.convolve(inputPatch, C1[r], 'valid'))
-        H2.append(Pool(H1[r], P12))
-        for b in range(0,N_branches):
-            H3[r][b]=Sigmoid(sig.convolve(H2[r], C2[r][b],'valid')-H3_bias[r][b]*I_H3)
-            H4[r][b]=Pool(H3[r][b],P34)
-
-    for k in range(0,ClassAmount):
-        for r in range (0, len(C1)):
-            for b in range(0,N_branches):
-               x[k]=x[k]+np.inner(H4[r][b].flatten(),W[r][b,k].flatten())
-        f[k]=Sigmoid(x[k]-bias[k])
-
-    ###### Back-propagation #####
-    for k in range(0, ClassAmount):
-        bias[k]=bias[k]-n_bias*(Class_label[k]-f[k])
-        for r in range (0, len(C1)):
-            for b in range(0,N_branches):
-            W[r][b,k]=W[r][b,k]+n_W*(Class_label[k]-f[k])*H4[r][b]
-            for i, j, u, v, n, m in product(range(0,3), range(0,3), range(0,2), range(0,2), range(0,len(C2[0][0])), range(0,len(C2[0][0]))):
-                C2[r][b,n,m]=C2[r][b,n,m]+n_C2*(Class_label[k]-f[k])*W[r][b,k,i,j]*H2[r][n+(2*j+u),m+(2*j+v)] #*SigmoidPrime(x_H3[r][b][2*j+u,2*j+v])
-                H3_bias[r][b]=H3_bias[r][b]-n_H3_bias*(Class_label[k]-f[k])*W[r][b,k,i,j] #*SigmoidPrime(x_H3[r][b][2*j+u,2*j+v])
-
-
-
-	
-\end{verbatim}
-\end{tiny}
 
 \end{appendices}
 
