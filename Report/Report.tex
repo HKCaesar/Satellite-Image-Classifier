@@ -126,16 +126,16 @@ These patches are then fed to the neural network in the exact same fashion as th
 A second grid overlay is then effectively created, with the size of these smaller patches exactly a quarter of the larger patches. 
 Figure \ref{fig:grid} provides an visual aid of this process, with the green patch indicating the large patch and the red patch indicating the resulting smaller patch. 
 \\
-The idea is to link these smaller patches to its four larger patches, these are its labeled parents. 
-Using a majority vote, the labels of these smaller patches can be determined using its corresponding parent patches. 
-For example, if three of its parent patches is labeled as city and only one parent is classified as forest, the label of the small patch will be city. 
+The idea is to link these smaller patches to its four larger patches, these are its labeled parents. The labels of the parents were determined by the network by giving it a certainty between 0 and 1 for each class, with 1 the highest certainty this patch belonged to the corresponding class.
+A weighted majority vote is then used by summing the values of these classification of each of the four parents, grouped by their classes. The highest sum will be picked as the winner of the majority vote and its corresponding class will be used as a label for the smaller patch. \\
+For example, if there are two possible classes, A and B, the certainty values of a large patch can be denoted as $\{a_1, b_1\}$. The values of the four parents of a small patch are then summed, so you end up with $\{A, B\}$. If $A > B$, then the small patch will be labeled as $A$, otherwise it's labeled as $B$.
 This results in a new classification grid with four times the amount patches, but a quarter of the size of a larger patch. 
 This in turn allows the user to make a finer classification and switch back and forth accordingly.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[scale=0.6]{./images/grid_explained.jpg}
-    \caption{Grid structure which facilitates the algorithm.}
+    \caption{Grid structure which facilitates the algorithm, green denotes a large patch, while red denotes the small patch. Here is illustrated how the red, smaller patch has four green, larger parent patches.}
 	\label{fig:grid}
 \end{figure}
 
