@@ -363,8 +363,11 @@ During this phase we tried to investigate whether training only the end-weights 
 
 \chapter{Personal Contributions}
 
-\subsection{Michiel Bongaerts}
+\section{Michiel Bongaerts}
 During the project my focus was on the implementation of the Convolutional Neural Networks in Python. I programmed the first design of our CNN based on LeNet-1 with only Back-propagation in the end-weights. I gathered images from Bing maps for the different classes to train this CNN on. It turned out that this first design (qualitatively) worked for unknown input images where it could distinguish between forest and city. This results encouraged us to continue with the CNN architectures. Next, I focussed on the back-propagation algorithm in which the CNN was able to back-propagate further till the weights of the second Convolution kernel. This algorithm turned out to be very computational expensive which stagnated my research on this. I continued to evaluate different kinds of architectures. 
+
+\section{Tung Phan}
+I was responsible for the backend implementation, finding the right tools and setting up the communication between Python and JavaScript. Maniek and I also worked on creating an algorithm for the smaller grid patch system. Because the exact dimensions of the initial patches fed to the neural network is extremely important, simply resizing them to a smaller dimension to create a finer classification was not an option. Instead, we created the smaller grid algorithm. The smaller patches had to be linked to their 'parent' patches, allowing us to determine the label of the smaller patch by a weighted majority vote. This in turn allowed us to make a more accurate classification without being heavily dependent on the initial patch dimensions. I was also partly involved with the frontend, together with Maniek. Of course, during the project, I also discussed the architecture of the CNN and helped brainstorming, though Majorlein and Michiel did most of the heavy lifting on that side.
 
 
 \bibliography{Report.bib}{}
