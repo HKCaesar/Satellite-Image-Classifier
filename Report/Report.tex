@@ -104,13 +104,28 @@ Below in figure \ref{fig:impression} an impression is given of what the end user
 	\label{fig:impression}
 \end{figure}
 \noindent
-The most notable attention grabber is the satellite image. This image will be acquired through a random call from a homogeneous satellite image database on every new instantiation of the system. Another possibility to acquire new data is by clicking on the 'New image' button. Right of the satellite image one can see labels (Forest, City, Water) which correspond with the labels which are outputs of the classification. Results obtained from our algorithm, given the current satellite image as input, are graphically feed back to the user. The impression above does that by showing a correspondence between image patches and their respective label via color coding laid over the satellite image. This rendition just shows a few islands of results as an example. Normally the entire image will have such arching (which will be a lot more subtle).\\
+The most notable attention grabber is the satellite image. This image will be acquired through a random call from a homogeneous satellite image database on every new instantiation of the system. Another possibility to acquire new data is by clicking on the 'New image' button. Right of the satellite image one can see labels (Forest, City, Water) which correspond with the labels which are outputs of the classification. Results obtained from our algorithm, given the current satellite image as input, are graphically fed back to the user. The impression above does that by showing a correspondence between image patches and their respective label via color coding laid over the satellite image. This rendition just shows a few islands of results as an example. Normally the entire image will have such arching (which will be a lot more subtle).\\
 \\
-Figure \ref{fig:grid} shows how it works internally. Two grids are maintained. One with patches the size of 25 by 25 pixels. The other by the size of 50 by 50 pixels. The latter is actually fed to the Neural Network from which will be decided for that patch the percentage of type of label it contains.  Four 50 by 50 pixels will be grouped together to create a square. In the middle the 25 by 25 pixels patch is placed. This patch will eventually be coloured on the satellite image to indicate the type of label. To decide that, a weighted majority vote of the four 50 by 50 pixels surrounding that smaller patch is computed. Like a convolution filter this construction is shifted over the satellite image as to decide for every area on it. As one can imagine, 25 pixels at the borders are omitted. 
+In order to classify the satellite image, the map is first divided into patches of predetermined dimensions. 
+These patches are squares, the dimensions should be divisible by 2 and these are the main, large patches to be fed into the neural network. 
+The network will label the patches and return the outcome, resulting in a grid-like classification as shown in Figure \ref{fig:impression}. 
+\\
+However, we wanted to give the user the choice of making a more detailed classification with a smaller grid size. 
+To do so, an additional grid overlay is created with a small modification to the original algorithm: the large patches now overlap each other in both dimensions by a half. 
+So if the map can be divided into N large patches in the width and M large patches in the height, this new setup will now have (2N - 1) patches in the width and (2M - 1) patches in the height, discarding patches that are halfway out of bounds. 
+These patches are then fed to the neural network in the exact same fashion as the previous method. 
+A second grid overlay is then effectively created, with the size of these smaller patches exactly a quarter of the larger patches. 
+Figure \ref{fig:grid} provides an visual aid of this process, with the green patch indicating the large patch and the red patch indicating the resulting smaller patch. 
+\\
+The idea is to link these smaller patches to its four larger patches, these are its labeled parents. 
+Using a majority vote, the labels of these smaller patches can be determined using its corresponding parent patches. 
+For example, if three of its parent patches is labeled as city and only one parent is classified as forest, the label of the small patch will be city. 
+This results in a new classification grid with four times the amount patches, but a quarter of the size of a larger patch. 
+This in turn allows the user to make a finer classification and switch back and forth accordingly.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.6]{./images/grid.jpg}
+    \includegraphics[scale=0.6]{./images/grid_explained.jpg}
     \caption{Grid structure which facilitates the algorithm.}
 	\label{fig:grid}
 \end{figure}
@@ -172,7 +187,7 @@ The would haves requirements were on a whole different level and thus are self-e
 
 
 
-\chapter{Implementation}
+\chapter{Software Architecture}
 A plan has been established what kind of application should come about. The previous discussion pressed for a certain kind of structure. One where a Neural Network is central to the problem to be solved. But also a frontend is needed for certain user interaction as well as an infrastructure in the backend which facilitates the communication with said frontend. This chapter discusses the implementation of both the front- and backend and the communication between these layers
 
 \section{Concept}
@@ -328,38 +343,6 @@ During this phase we tried to investigate whether training only the end-weights 
 \end{figure}
 \\\\
 
-
-
-\chapter{Time schedule}
-\begin{center}
-  \begin{tabular}{| l | p{5cm}| p{5cm} | r | }
-    \hline
-    \textbf{Week} & \textbf{Description of work} & \textbf{Deadline} & \textbf{Labour (hours)} \\ \hline \hline
-	20 & \begin{itemize} \vspace{-1.75em} \item Implement backpropagation output layer\vspace{-1em}
-	\item Start examining how to take into account RGB values \vspace{-1em}
-	\item Train on more pictures and examine performance on  other classes like city and water \vspace{-1em}
-	\item Start developing frontend/ backend architecture
-	\end{itemize}
-	& Finish updated proposal & 40 					\\	\hline	
-	21 &  \begin{itemize} \vspace{-1.75em} \item Work on implementing communication protocol\vspace{-1em}
-	\item Experiments with connecting the nodes of the different layers of the Neural Networks \vspace{-1em}
-	\end{itemize}
-	& Finish backpropagation output layer, and frontend implementation of the communication protocol& 40 					\\	\hline
-	22 & \begin{itemize} \vspace{-1.75em}
-	\item In-between overall evaluation \vspace{-1em}
-	\item Backend and frontend implementation\vspace{-1em}
-	\item Experiment with preprocessed images (noise reduction) \vspace{-1em}
-	\item Implement backpropagation further, until layer H3, see Figure \ref{fig:Architecture} \vspace{-1em}
-	\end{itemize} & Finish model with complete RGB values and the frontend/backend architecture must be completely finished & 40 					\\  \hline
-	23 & Start report writing and implement last adjustments & Finished product for demonstration & 40 	\\	\hline
-	24 & Preparation for demo & Demo & 30				\\  \hline
-    25 & Project finalization & - & 30 				\\ \hline
-    26 & Project finalization & Project report + individual document & 40 \\ \hline
-       & & & Total: 468  \\ \hline
-
-    \hline
-  \end{tabular}
-\end{center}
 
 \chapter{Personal Contributions}
 
