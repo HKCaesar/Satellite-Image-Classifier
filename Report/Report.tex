@@ -108,7 +108,7 @@ The performance will be measured by the classification accuracy percentage: the 
 \label{chap:concept}
 Earlier attempts to conceptualize the idea to automate map making resulted in a proposal that too heavily focused on the actual map creation rather than the classification. For a Neural Network course this was deemed not befitting enough. The plan was also quite far reaching to start with. Thoughts were put into downscaling this ambitious plan. We played around a bit and came up with a new concept which will be discussed in this chapter.\\
 \\
-Firstly, an impression is given how the end user interacts with our system. This will lay the groundwork for how the Neural Network will be constructed. Secondly through the principles of MoSCoW a flexible requirements list is established. Actual talk about the classification is done in the subsequent chapter.
+Firstly, an impression is given how the end user interacts with our system. This will lay the groundwork for how the Neural Network will be constructed. Actual talk about the classification is done in the subsequent chapter. Secondly through the principles of MoSCoW a flexible requirements list is established. An evaluation of said requirements is lastly provided. 
 
 \section{Impression}
 
@@ -141,7 +141,7 @@ For example, if there are three possible classes, $A$,$B$ and $C$, the certainty
 \end{figure}
 
 \section{MoSCoW}
-Since our time to work on this project is limited while the amount of goals we wanted to accomplish in this period were numerous, we used the MoSCoW analysis technique to get prioritize these goals and focus on the most important requirements. MoSCow stands for \textit{Must have}, \textit{Should have}, \textit{Could have} and \textit{Would have}, with the importance of each category ordered in a descending fashion. This enables us to identify core requirements which are absolutely necessary for the functionality of our implementation and in turn enables us to set up the core functionality first before focusing on the secondary objectives. All the requirements are labeled in these four classes.\\
+Since our time to work on this project is limited while the amount of goals we wanted to accomplish in this period were numerous, we used the MoSCoW analysis technique to prioritize these goals and focus on the most important requirements. MoSCow stands for \textit{Must have}, \textit{Should have}, \textit{Could have} and \textit{Would have}, with the importance of each category ordered in a descending fashion. This enables us to identify core requirements which are absolutely necessary for the functionality of our implementation and in turn enables us to set up the core functionality first before focusing on the secondary objectives. All the requirements are labeled in these four classes. These requirements were laid out before the concept we eventually pursued had taken shape.\\
 
 \subsection{Must have}
 Must have requirements are critical to project success. 
@@ -152,7 +152,7 @@ Must have requirements are critical to project success.
 \end{itemize}
 
 \subsection{Should have}
-Requirements labeled as should have are important to book success, but not necessary for delivery. 
+Requirements labeled as `Should have' are important to book success, but not necessary for delivery.
 
 \begin{itemize}
 \item Create a clear interface in which the unlabeled images can be uploaded, and the output consists of labeled images. 
@@ -163,8 +163,8 @@ Requirements labeled as should have are important to book success, but not neces
 It would be very nice if we would be able to reach the Could have features, but they are not critical. 
 \begin{itemize}
 \item Experiment with preprocessed images (noise reduction, gradient calculations)
-\item Analyze images on city level, so with more details present. For this purpose new classes have to be added, such as roadways, cycle paths, 	buildings, distinct vegetations etc. 
-\item Experiment with other models than the state-of-the art LeNet-1 CNN. For examples, a CNN in which Genetic Algorithms are incorporated, or implementing an Extreme Learning Machine for the training of the weights. 
+\item Analyze images on city level, so with more details present. For this purpose new classes have to be added, such as roadways, cycle paths, 	buildings, distinct vegetations etcetera. 
+\item Experiment with other models than the state-of-the art \textit{LeNet-1 CNN}. For examples, a CNN in which \textit{Genetic Algorithms} are incorporated, or implementing an \textit{Extreme Learning Machine} for the training of the weights. 
 \end{itemize}
 
 \subsection{Would have}
@@ -176,26 +176,21 @@ These requirements are implemented only in the most ideal situation. They are co
 \item Sell the software package to Google. 
 \end{itemize}
 
-\subsection{Elaboration on the design choices}
-
-% Oke, ik haat echt ingesprongen stukjes tekst! Of gewoon een nieuwe alinea of gewoon doorschrijven!!! Of misschien is dit mijn fetish
-% > Gewoon typen, layout komt op het laatst.
-As the name of the Must have category implies, these requirements are critical to the success of the project and as such, these requirements were all met. The CNN is designed and is trained beforehand, the resulting weights are then injected into the CNN placed on the server, used to classify the map patches. The CNN is capable of distinguishing three separate classes, with an experimental CNN capable of distinguishing four classes (further elaborated in Section \ref{chap:resultsanddiscussion}).
-A basic web interface was created, with the ability to highlight specific classes to help visualize the classification of the network.
-
-Due to time constraints, some requirements had to be modified in order to implement them or were left out altogether. The ability to upload own satellite imagery was replaced with the ability to acquire random satellite imagery of Amsterdam and its surroundings, which are in turn classified by the network. Choosing this route means that we do can worry less about content validity and security of the application.
-
-The calculation of uncertainty is possible, but the implementation of user correction in conjunction with this uncertainty was left out. This is due to time constraints and the fact that we have not implemented on-line learning, but rather let the network train off-line beforehand, making this feature obsolete.
-
-Preprocessing the images could have been implemented and would surely boost our classification results. However, the goal of this project was not to achieve a high classification performance, but rather to implement a neural network that could learn on its own what the best discriminating features of an image is.
-
-The option to classify maps on different altitude levels is not implemented, also due to time constraints. Different levels of altitude means to either have a general neural network that works on all altitudes, or having to train the network on different altitudes in order to produce multiple weight setups. Both of these options meant more time needed to develop, implement and test the new setups. We did manage to implement a good general neural network, but we did not have time to test this functionality properly on different altitudes.
-
-Different setups have been experimented with, which will be discussed in Section \ref{chap:resultsanddiscussion}.
-
+\subsection{Evaluation of the requirements}
+Now that the implementation has been finished, it is time to evaluate the whether the requirements were met. This, too, will be done in accordance with MoSCoW.\\
+\\
+\textbf{Must have}\\
+As the name of the Must have category implies, these requirements are critical to the success of the project and as such, these requirements were all met. The CNN is designed and is trained beforehand, the resulting weights are then injected into the CNN placed on the server, used to classify the map patches. The CNN is capable of distinguishing three separate classes, with an experimental CNN capable of distinguishing four classes (further elaborated on in Section \ref{chap:resultsanddiscussion}).
+A basic web interface was created, with the ability to highlight specific classes to help visualize the classification of the network.\\
+\\
+\textbf{Should have}\\
+Due to time constraints, some requirements had to be modified in order to implement them or were left out altogether. The ability to upload own satellite imagery was replaced with the ability to acquire random satellite imagery of Amsterdam and its surroundings, which are in turn classified by the network. Choosing this route means that we can worry less about content validity and security of the application. The calculation of uncertainty is possible, but the implementation of user correction in conjunction with this uncertainty was left out. This is due to time constraints and the fact that we have not implemented on-line learning, but rather let the network train off-line beforehand, making this feature obsolete.\\
+\\
+\textbf{Could have}\\
+Preprocessing the images could have been implemented and would surely boost our classification results. However, the goal of this project was not to achieve a high classification performance, but rather to implement a neural network that could learn on its own what the best discriminating features of an image is. The option to classify maps on different altitude levels is not implemented, also due to time constraints. Different levels of altitude means to either have a general neural network that works on all altitudes, or having to train the network on different altitudes in order to produce multiple weight setups. Both of these options meant more time needed to develop, implement and test the new setups. We did manage to implement a good general neural network, but we did not have time to test this functionality properly on different altitudes. Different setups have been experimented with, which will be discussed in Section \ref{chap:resultsanddiscussion}.\\
+\\
+\textbf{Would have}\\
 The would haves requirements were on a whole different level and thus are self-explanatory why they weren't implemented.
-
-
 
 \chapter{Software Architecture}
 \label{chap:softwarearchitecture}
