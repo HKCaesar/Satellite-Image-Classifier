@@ -93,7 +93,8 @@ Maniek \textsc{Santokhi}
 \chapter{Introduction}
 
 Mapping the world around us has always been a human endeavor to advance economical output. A better understanding of the places around us makes for more efficient traveling and exploitation of the land. However, it has always been a very slow and tedious process to produce these maps, something technology has not changed just yet. A new opportunity has arisen with the arrival of satellite imagery and an ever increasing amount of computational power. An opportunity where this mapping can be done automatically so that this tedious and slow job can be processed even more quickly and perhaps more accurately. It is with this in mind we further analyze any possibilities.\\
-The research question posed in this project, along with its clarification will be discussed in Chapter \ref{chap:researchquestion}. This is then followed by the elaboration on the concept in Chapter \ref{chap:concept}, where we will discuss the visual design choices and method, and our MoSCoW analysis method. The technical details of the software architecture will be discussed in Chapter \ref{chap:softwarearchitecture}, detailing the concept of the communication between different servers and our choice of dataset. The heart of our classification, the neural network, will then be elaborated upon in Chapter \ref{chap:CNN}, with the method of implementation of this network in Chapter \ref{chap:method}. Finally, the results and discussion will be described in detail in Chapter \ref{chap:resultsanddiscussion}.
+\\
+The research question posed in this project, along with its clarification will be discussed in Chapter \ref{chap:researchquestion}. This is then followed by an elaboration on the conceptualization of the research question in Chapter \ref{chap:concept}, where we will discuss details of the system to be implemented. The technical aspects of the system will be discussed in Chapter \ref{chap:softwarearchitecture}, detailing the inner workings of the framework which carries the neural network to be. The heart of our classification, the neural network, will then be elaborated upon in Chapter \ref{chap:CNN}, with the method of implementation of this network in Chapter \ref{chap:method}. Finally, the results and discussion will be described in detail in Chapter \ref{chap:resultsanddiscussion}.
 
 \chapter{Research Question}
 \label{chap:researchquestion}
@@ -105,37 +106,32 @@ The performance will be measured by the classification accuracy percentage: the 
 
 \chapter{Concept}
 \label{chap:concept}
-Earlier attempts to conceptualize the idea to automate map making resulted in a proposal that too heavily focused on the actual map creation rather than the classification. For a Neural Network course this was deemed not befitting enough. The plan was also quite far reaching to start with. Thoughts were put into downscaling this ambitious plan. We played around a bit and came up with a new concept which will be discussed in this chapter. Firstly, an impression is given how the end user interacts with our system. This will lay the groundwork for how the Neural Network will be constructed. Secondly through the principles of MoSCoW a flexible requirements list is established. Actual talk about the classification is done in the subsequent chapter.
+Earlier attempts to conceptualize the idea to automate map making resulted in a proposal that too heavily focused on the actual map creation rather than the classification. For a Neural Network course this was deemed not befitting enough. The plan was also quite far reaching to start with. Thoughts were put into downscaling this ambitious plan. We played around a bit and came up with a new concept which will be discussed in this chapter.\\
+\\
+Firstly, an impression is given how the end user interacts with our system. This will lay the groundwork for how the Neural Network will be constructed. Secondly through the principles of MoSCoW a flexible requirements list is established. Actual talk about the classification is done in the subsequent chapter.
 
 \section{Impression}
 
-Below in figure \ref{fig:impression} an impression is given of what the end user will interact with and a possible result that might come about from said interaction.\\
+Below in Figure \ref{fig:impression} an impression is given of what the end user will interact with and a possible result that might come about from said interaction.\\
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{./images/impression.jpg}
+    \includegraphics[width=0.8\textwidth]{./images/impression_toggle.jpg}
     \caption{Impression of what the user interacts with and a possible outcome.}
 	\label{fig:impression}
 \end{figure}
 \noindent
-The most notable attention grabber is the satellite image. This image will be acquired through a random call from a homogeneous satellite image database on every new instantiation of the system. Another possibility to acquire new data is by clicking on the 'New image' button. Right of the satellite image one can see labels (Forest, City, Water) which correspond with the labels which are outputs of the classification. Results obtained from our algorithm, given the current satellite image as input, are graphically fed back to the user. The impression above does that by showing a correspondence between image patches and their respective label via color coding laid over the satellite image. This rendition just shows a few islands of results as an example. Normally the entire image will have such arching (which will be a lot more subtle).\\
+The most notable attention grabber is the satellite image. This image will be acquired through a random call from a homogeneous satellite image database on every new instantiation of the system. Another possibility to acquire new data is by clicking on the 'New image' button. Right of the satellite image one can see labels (Forest, City, Water) which correspond with the labels which are outputs of the classification. Results obtained from our algorithm, given the current satellite image as input, are graphically fed back to the user. The impression above does that by showing a correspondence between image patches (squares) and their respective label via color coding laid over the satellite image. This rendition just shows a few islands of results as an example. Normally the entire image will have such arching.\\
 \\
-In order to classify the satellite image, the map is first divided into patches of predetermined dimensions. 
-These patches are squares, the dimensions should be divisible by 2 and these are the main, large patches to be fed into the neural network. 
-The network will label the patches and return the outcome, resulting in a grid-like classification as shown in Figure \ref{fig:impression}. 
+In order to classify the satellite image, the map is first divided into patches of predetermined dimensions. These patches are squares, the dimensions should be divisible by $2$ (as will be explained later) and these are the main, large patches to be fed into the neural network to be classified. The network will label the patches and return the outcome. The outcome is then evaluated to be rendered like is shown in Figure \ref{fig:impression}.\\
 \\
-However, we wanted to give the user the choice of making a more detailed classification with a smaller grid size. 
-To do so, an additional grid overlay is created with a small modification to the original algorithm: the large patches now overlap each other in both dimensions by a half. 
-So if the map can be divided into N large patches in the width and M large patches in the height, this new setup will now have (2N - 1) patches in the width and (2M - 1) patches in the height, discarding patches that are halfway out of bounds. 
-These patches are then fed to the neural network in the exact same fashion as the previous method. 
-A second grid overlay is then effectively created, with the size of these smaller patches exactly a quarter of the larger patches. 
-Figure \ref{fig:grid} provides an visual aid of this process, with the green patch indicating the large patch and the red patch indicating the resulting smaller patch. 
+However, we wanted to give the user the choice of making a more detailed classification with a smaller grid size without altering the workings of the neural network. To do so, an additional grid overlay is created with a small modification to the original rendering algorithm: the large patches now overlap each other in both dimensions by a half (hence that the large patches should be divisible by $2$). So if the map can be divided into N large patches in the width and M large patches in the height, this new setup will now have $(2N - 1)$ patches in the width and $(2M - 1)$ patches in the height, discarding patches that are halfway out of bounds. These patches are then fed to the neural network in the exact same fashion as the previous method. A second grid overlay is then effectively created, with the size of these smaller patches exactly a quarter of the larger patches. 
+Figure \ref{fig:grid} provides a visual aid of this process, with the green patch indicating the large patch and the red patch indicating the resulting smaller patch.\\
 \\
-The idea is to link these smaller patches to its four larger patches, these are its labeled parents. The labels of the parents were determined by the network by giving it a certainty between 0 and 1 for each class, with 1 the highest certainty this patch belonged to the corresponding class.
-A weighted majority vote is then used by summing the values of these classification of each of the four parents, grouped by their classes. The highest sum will be picked as the winner of the majority vote and its corresponding class will be used as a label for the smaller patch. \\
-For example, if there are two possible classes, A and B, the certainty values of a large patch can be denoted as $\{a_1, b_1\}$. The values of the four parents of a small patch are then summed, so you end up with $\{A, B\}$. If $A > B$, then the small patch will be labeled as $A$, otherwise it's labeled as $B$.
-This results in a new classification grid with four times the amount patches, but a quarter of the size of a larger patch. 
-This in turn allows the user to make a finer classification and switch back and forth accordingly.
+The idea is to link these smaller patches to its four larger patches. These are its labeled parents. The labels of the parents were determined by the network by giving it a certainty between 0 and 1 for each class, with 1 the highest certainty this patch belonged to the corresponding class.
+A weighted majority vote is then used by summing the values of these classification of each of the four parents, grouped by their classes. The highest sum will be picked as the winner of the majority vote and its corresponding class will be used as a label for the smaller patch.\\
+\\
+For example, if there are three possible classes, $A$,$B$ and $C$, the certainty values of a patch can be denoted as $\{a_i, b_i, c_i\}$ where $1 \leq i \leq 4$. The values of the four parents of a small patch are then weighted, so you end up with $\{ \frac{1}{4}\sum_{i=1}^{4} a_i, \frac{1}{4}\sum_{i=1}^{4} b_i, \frac{1}{4}\sum_{i=1}^{4} c_i\}$. Whomever is biggest, wins. Doing this for all $(2N - 1) \times (2M - 1)$ patches results in a new classification grid showing more detail. This in turn allows the user to make a finer classification and switch back and forth accordingly via the toggle button displayed in the impression of Figure \ref{fig:impression}.
 
 \begin{figure}[h!]
     \centering
