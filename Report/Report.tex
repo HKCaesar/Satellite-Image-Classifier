@@ -192,30 +192,29 @@ Preprocessing the images could have been implemented and would surely boost our 
 \textbf{Would have}\\
 The would haves requirements were on a whole different level and thus are self-explanatory why they weren't implemented.
 
-\chapter{Software Architecture}
+\chapter{System design}
 \label{chap:softwarearchitecture}
-A plan has been established what kind of application should come about. The previous discussion pressed for a certain kind of structure. One where a Neural Network is central to the problem to be solved. But also a front end is needed for certain user interaction as well as an infrastructure in the back end which facilitates the communication with said front end. This chapter discusses the implementation of both the front- and back end and the communication between these layers
+A plan has been established what kind of application should come about. The previous discussion pressed for a certain kind of structure. One where a Neural Network is central to the problem to be solved. But also a frontend is needed for certain user interaction as well as an infrastructure in the backend which facilitates the communication with said frontend. This chapter discusses the infrastructure setup, the technologies used and the data being acquired.
 
-\section{Concept}
-The impression given above in figure \ref{fig:impression} is close to what the end result should look like (although it only displays a certain state). Yet an entire infrastructure outside of the Neural Network is needed to facilitate the application. Below in figure \ref{fig:communication} an infrastructure is visualized via the communication of the two entities.
+\section{Infrastructure}
+The impression given above in Figure \ref{fig:impression} is close to what the end result of the implementation will look like (although it only displays a certain state). Yet an entire infrastructure outside of the Neural Network is needed to facilitate the application. Below in Figure \ref{fig:communication} an infrastructure is visualized via the communication of the two entities.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.5]{./images/communication.jpg}
+    \includegraphics[scale=0.5]{./images/communication2.jpg}
     \caption{Communication visualization between front end and back end.}
 	\label{fig:communication}
 \end{figure}
 \noindent
-First, at the front end, an image is acquired by the user from an API call. The image is immediately send to the back end. There, patches are extracted according to a certain protocol (specific size and sequence). The patches are classified by our Neural Network. Send back to the front end are the results in a list according to the sequence defined by the protocol. Also a codification of the results is part of the protocol. Back at the front end the image is made into a grid which corresponds to the size of the protocol. According to the results of the Neural Network these grid windows are colored.
+First, at the frontend, an image is acquired by the user from a map API call. The image is immediately send to the backend. There, patches are extracted according to a certain protocol (specific size and sequence) which also depend on whether small or large patches need to be visualized. The patches are classified by our Neural Network. Send back to the frontend are the label results in a list according to the sequence defined by the protocol mentioned earlier. Back at the frontend the image is made into a grid which also corresponds to the size and sequence of the protocol. The squares in the grid are then colored in according to the labels in the list that had been sent back.
 
 \section{Technical Details}
-The fronted consists of a web based interface, capable of visualizing the map acquired with the Bing Maps API \cite{bing}, the controls enabling the user to interact with the system and the resulting classification. The web application runs on Node.js and ZeroRPC. Node.js is a event-driven I/O server-side JavaScript environment and ZeroRPC is a cross-language RPC library, capable of performing remote procedure calls. Using these calls, we can effectively communicate with the neural network, written in Python, which hosted on another server. The idea of this setup was to make it scalable: the initial plan was to implement the neural network with the idea of on-line learning, meaning the network could use a considerable amount of resources while running. If this network was hosted on the same server as the web server, this could be detrimental to the performance of both services.
+The fronted consists of a web based interface, capable of visualizing the map acquired with the Bing Maps API \cite{bing}, the controls enabling the user to interact with the system and the resulting classification. The web application runs on Node.js and ZeroRPC. Node.js is an event-driven I/O server-side JavaScript environment and ZeroRPC is a cross-language RPC library, capable of performing remote procedure calls. Using these calls, we can effectively communicate with the Neural Network, written in Python, which is hosted on another server. The idea of this setup was to make it scalable: the initial plan was to implement the Neural Network with the idea of online learning, meaning the network could use a considerable amount of resources while running. If this network was hosted on the same server as the web server, this could be detrimental to the performance of both services.
 
-\section{Dataset}
-The image which is being acquired every time comes from the Bing Maps database \cite{bing}. A predefined size of the map with satellite view enabled, the labels turned off, no other controls or logos visible and where the hight is 100 meters is put in the frontend.  Randomly a location inside the Netherlands is generated. Now the actual image is taken from the map.
-
-For training, satellite images from the same source and practice mentioned above are drawn on a per category/label basis. Patches are acquired code-wise over those images so that for each patch it is known what category/label belongs to it.
-
+\section{Map dataset}
+The image which is being acquired every time comes from the Bing Maps database \cite{bing}. A predefined size of the map with satellite view enabled, the labels turned off, no other controls or logos visible and where the hight is set to 100 meters is put in the frontend.  Randomly a location inside the Amsterdam area is generated. Now the actual screengrap is taken from this acquired map.\\
+\\
+For training, satellite images from the same source and practice mentioned above are drawn on a per category/label basis. Meaning: specific images of locations only showing one category (water, forest, city) are being taken. Then patches are acquired code-wise over those images so that for each patch it is known what category/label belongs to it. These images are, however, taken from a larger corpus than the Amsterdam area, from across the world.
 
 \chapter{Convolutional Neural Network}
 \label{chap:CNN}
