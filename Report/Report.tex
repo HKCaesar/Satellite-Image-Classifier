@@ -101,18 +101,13 @@ The initial research into image classification problems and in particular satell
 \\
 In order to not make the Neural Network overly complex due to the large amount of data that has to be trained upon, features have to be extracted to reduce the dataspace to base the Neural Network on. Yet, manually choosing and tweaking features is empirically based and can lead to suboptimal solutions. With Convolutional Neural Networks, however, this process of feature extraction is incorporated in the training of Neural Network. The backpropagation, which is part in these CNNs, facilitates that all the weights of the layers are adjusted iteratively, and therefore it eliminates the need to manually create the convolution masks with which the features are being extracted. Another advantage of using CNN is the ability to take into account correlations of neighboring input data, which are plentiful in satellite images. Convolutional Neural Networks also make use of the principle of weight sharing in convolutional layers, which further reduces the amount of free parameters.
 
-It is understandable that most of the papers we encountered within the context of our problem make use of Convolutional Neural Networks.\\
+Given these properties, it is understandable that most of the papers we encountered within the context of our problem make use of Convolutional Neural Networks.\\
 \\
-Yet, we described that extracting features manually can lead to suboptimal results. However, the amount of variations possible in CNNs too allow for suboptimal outcomes within the given context. It is therefore interesting to explore this sub optimality with the following research question:\\
+We described that extracting features manually can lead to suboptimal results. However, the amount of variations possible in CNNs too allow for suboptimal outcomes within the given context. It is therefore interesting to explore this optimality dimension with the following research question:\\
 
-
+\emph{For satellite image classification to identify forest, water and city, what is the best Convolutional Neural Network configuration that exploits the feature extraction generality of CNNs?}\\
 \\
-\label{chap:researchquestion}
-In order to evaluate the feasibility of our project, we first have to find a baseline to measure it against. For this, we compared the results of our implementation against the performance of a network which randomly guesses. So if a network has to classify three types of map sections, each section will have a 33\% chance of being picked, resulting in a error rate of 67\%. With this in mind, we set up the following research question: \\ \\
-
-\emph{What is the performance of generalized map classification based on a convolutional neural network compared to random guessing?}
-\\ \\
-The performance will be measured by the classification accuracy percentage: the higher the accuracy, the better the classification. In the case of random guessing, the accuracy is 33\%. The classification is generalized, because we want the implementation to work on every possible map possible without additional alterations to the network. We chose to use a convolutional network, with the justification of this choice discussed in Chapter \ref{chap:CNN}.
+This research is about constructing a CNN that can classify satellite imagery well for the labels: forest, water and city while retaining the notion to not specifically extract features manually. Empirically the answer to this question will be researched in which the appropriate boundaries will be set to come to a conclusion in an effective manner.
 
 \chapter{Concept}
 \label{chap:concept}
@@ -388,7 +383,7 @@ P= \frac{N_{right}}{N_{right}+ N_{wrong}}
 \end{equation}
 In which $N_{right}$ determines the number of correctly classified patches and $N_{wrong}$ the number of patches which were classified wrong. This equation is used to calculate the general performance in which we include all patches and for the performance for each class by only including the corresponding patches.
 \\\\
-All networks had similar convolution kernels for the first layer. If we used $3$ rows or convolution kernels in the first layer we used the kernel types shown in figure \ref{fig:3filters}. For the networks with $5$ and $7$ the kernels shown in figure \ref{fig:5filters} and \ref{fig:7filters} respectively. The weights for the second convolution kernels were drawn from a uniform distribution and therefore these kernels differed for each network. With equation \ref{eq:P} the performances of the networks was calculated. The classifier neuron with the highest activation value is taken to be the class of classification. If this class matches the corresponding class of the input patch the network is considered to evaluate the patch as correct else it is classified wrong. Remind, that city patches might include tree or grassland patches as well.
+All networks had similar convolution kernels for the first layer. If we used $3$ rows or convolution kernels in the first layer we used the kernel types shown in figure \ref{fig:3filters}. For the networks with $5$ and $7$ the kernels are shown in figure \ref{fig:5filters} and \ref{fig:7filters} respectively. The weights for the second convolution kernels were drawn from a uniform distribution and therefore these kernels differed for each network. With equation \ref{eq:P} the performances of the networks was calculated. The classifier neuron with the highest activation value is taken to be the class of classification. If this class matches the corresponding class of the input patch, the network is considered to evaluate the patch as correct, otherwise it is classified as wrong. Mind that city patches might include tree or grassland patches as well.
 
 \begin{tiny}
 	\begin{center}
