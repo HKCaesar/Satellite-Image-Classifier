@@ -22,11 +22,11 @@
 \tolerance=1000
 
 \usepackage[a4paper]{geometry}
-\voffset=-80pt
+\voffset=-50pt
 \hoffset=0pt
 \topmargin = 0pt
 \textwidth = 450pt
-\textheight = 770pt
+\textheight = 700pt
 \marginparwidth = 10pt
 \oddsidemargin = 5pt
 \topmargin = 1pt
@@ -41,6 +41,8 @@
 %----------------------------------------------------------------------------------------
 
 \begin{titlepage}
+
+\newgeometry{top=3in}
 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
@@ -74,6 +76,7 @@ Maniek \textsc{Santokhi}
 
 {\large \today}\\[3cm]
 
+\restoregeometry
 
 \vfill
 
@@ -83,7 +86,9 @@ Maniek \textsc{Santokhi}
 %	CONTENT
 %----------------------------------------------------------------------------------------
 
-\tableofcontents
+{\small \tableofcontents}
+
+\addtocontents{toc}{\protect\thispagestyle{empty}}
 
 \chapter{Introduction}
 
