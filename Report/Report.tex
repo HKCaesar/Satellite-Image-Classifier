@@ -94,29 +94,32 @@ Maniek \textsc{Santokhi} - 4093968
 \chapter{Introduction}
 
 Mapping the world around us has always been a human endeavor to advance economical output. A better understanding of the places around us makes for more efficient traveling and exploitation of the land. However, it has always been a very slow and tedious process to produce these maps, something technology has not changed just yet. A new opportunity has arisen with the arrival of satellite imagery and an ever increasing amount of computational power. An opportunity where this mapping can be done automatically so that this tedious and slow job can be processed even more quickly and perhaps more accurately. It is with this in mind we further analyze any possibilities.\\
-\\
+
 The research question posed in this project, along with its clarification will be discussed in Chapter \ref{chap:researchquestion}. This is then followed by an elaboration on the conceptualization of the research question in Chapter \ref{chap:concept}, where we will discuss details of the system to be implemented, both chapters are written by taking into consideration the state-of-the art research.  The technical aspects of the system will be discussed in Chapter \ref{chap:softwarearchitecture}, detailing the inner workings of the framework which carries the neural network to be. The heart of our classification, the neural network, will then be elaborated upon in Chapter \ref{chap:CNN}, with the method of implementation of this network in Chapter \ref{chap:method}. Finally, the results and discussion will be described in detail in Chapter \ref{chap:resultsanddiscussion}.
 
 \chapter{Research Question}
 \label{chap:researchquestion}
-One of the hardest aspects of image classification is the feature extraction. Traditionally this was done by a seperate feature extraction \cite{duda1973pattern}, which was necessary mainly because no computers were available that could process the high-complex algorithms and because large datasets to train and test could be found yet \cite{lecun1998gradient}. However, this manual choice is of feature extraction is suboptimal, since it is empirical and bad choices can strongly influence the results \cite{duffner2008face}. 
+One of the hardest aspects of image classification is the feature extraction. Traditionally this was done by a seperate feature extraction \cite{duda1973pattern}, which was necessary mainly because no computers were available that could process the high-complex algorithms and because large datasets to train and test could not be found yet \cite{lecun1998gradient}. However, this manual choice is of feature extraction is suboptimal, since it is empirical and bad choices can strongly influence the results \cite{duffner2008face}. 
 Another possibility is to fully connect all the raw pixels from the input image to a Multilayer Perceptron (MLP) and use backpropagation to find the feature extractors. Because of the extremely high input dimension of pictures, the number of free parameters is also extremely large and an infinite number of training data should be used to avoid overfitting \cite{hawkins2004problem}. \\
 
-In initial research we found a new solution into image classification problems and in particular satellite image classification: the Convolutional Neural Networks (CNN) \cite{Hongsheng2014} \cite{Farabet2013}. The literature is showing that using Convolutional Neural Networks (CNN) would introduce interesting properties to base our research and subsequent project implementation on (see Chapter \ref{chap:CNN}). \\
-The process of feature extraction is incorporated in the training of Neural Network. The backpropagation, which is part of these CNNs, facilitates that all the weights of the layers are adjusted iteratively, and therefore it eliminates the need to manually create the convolution masks with which the features are being extracted. Another advantage of using CNN is the ability to take into account correlations of neighboring input data, which are plentiful in satellite images. Convolutional Neural Networks also make use of the principle of weight sharing in convolutional layers, which further reduces the amount of free parameters. In literature it is indeed shown that the CNN automatically learns local feature extractors, they are invariant to small translations and distortionts, but due to the pooling layers drastically reduce the input dimension \cite{duffner2008face}. \\
+In initial research we found a new solution into image classification problems and in particular satellite image classification: the Convolutional Neural Networks (CNN) \cite{Hongsheng2014} \cite{Farabet2013}. The literature is showing that using Convolutional Neural Networks (CNN) would introduce interesting properties to base our research and subsequent project implementation on (see Chapter \ref{chap:CNN}).\\
+
+The process of feature extraction is incorporated in the training of Neural Network. The backpropagation, which is part of these CNNs, facilitates that all the weights of the layers are adjusted iteratively, and therefore it eliminates the need to manually create the convolution masks with which the features are being extracted. Another advantage of using CNN is the ability to take into account correlations of neighboring input data, which are plentiful in satellite images. Convolutional Neural Networks also make use of the principle of weight sharing in convolutional layers, which further reduces the amount of free parameters. In literature it is indeed shown that the CNN automatically learns local feature extractors, they are invariant to small translations and distortionts, but due to the pooling layers drastically reduce the input dimension \cite{duffner2008face}.
 
 Given these properties, it is understandable that most of the papers we encountered within the context of our problem make use of Convolutional Neural Networks.\\
-\\
-We described that extracting features manually can lead to suboptimal results. However, suboptimal outcomes could also be the result of the large amount of variations possible in CNNs within the given context. It is therefore interesting to explore this optimality dimension with the following research question:\\
 
-\emph{For satellite image classification to identify forest, water and city, what is the best Convolutional Neural Network configuration that exploits the feature extraction generality of CNNs?}\\
-\\
+We described that extracting features manually can lead to suboptimal results. However, suboptimal outcomes could also be the result of the large amount of variations possible in CNNs within the given context. It is therefore interesting to explore this optimality dimension with the following research question:
+
+\begin{quote}
+\emph{ \hspace{2ex} For satellite image classification to identify forest, water and city, what is the best Convolutional Neural Network configuration that exploits the feature extraction generality of CNNs?}
+\end{quote}
+
 This research is about constructing a CNN that can classify satellite imagery well for the labels: forest, water and city while retaining the notion to not specifically extract features manually. Empirically the answer to this question will be researched in which the appropriate boundaries will be set to come to a conclusion in an effective manner. Also a competing notion to the feature extraction generality of CNNs will be explored as a discussion mean.
 
 \chapter{Concept}
 \label{chap:concept}
 Earlier attempts to conceptualize the idea to automate map making resulted in a proposal that too heavily focused on the actual map creation rather than the classification. For a Neural Network course this was deemed not befitting enough. The plan was also quite far reaching to start with. Thoughts were put into downscaling this ambitious plan. We played around a bit and came up with a new concept which will be discussed in this chapter.\\
-\\
+
 Firstly, an impression is given how the end user interacts with our system. This will lay the groundwork for how the Neural Network will be constructed. Actual talk about the classification is done in the subsequent chapter. Secondly, through the principles of MoSCoW, a flexible requirements list is established. An evaluation of said requirements is lastly provided. 
 
 \section{Impression}
@@ -129,17 +132,17 @@ Below in Figure \ref{fig:impression} an impression is given of what the end user
     \caption{Impression of what the user interacts with and a possible outcome.}
 	\label{fig:impression}
 \end{figure}
-\noindent
+
 The most notable attention grabber is the satellite image. This image will be acquired through a random call from a homogeneous satellite image database on every new instantiation of the system. Another possibility to acquire new data is by clicking on the 'New image' button. Right of the satellite image one can see labels (Forest, City, Water) which correspond with the labels which are outputs of the classification. Results obtained from our algorithm, given the current satellite image as input, are graphically fed back to the user. The impression above does that by showing a correspondence between image patches (squares) and their respective label via color coding laid over the satellite image. This rendition just shows a few islands of results as an example. Normally the entire image will have such arching.\\
-\\
+
 In order to classify the satellite image, the map is first divided into patches of predetermined dimensions. These patches are squares, the dimensions should be divisible by $2$ (as will be explained later) and these are the main, large patches to be fed into the neural network to be classified. The network will label the patches and return the outcome. The outcome is then evaluated to be rendered like is shown in Figure \ref{fig:impression}.\\
-\\
+
 However, we wanted to give the user the choice of making a more detailed classification with a smaller grid size without altering the workings of the neural network. To do so, an additional grid overlay is created with a small modification to the original rendering algorithm: the large patches now overlap each other in both dimensions by a half (hence that the large patches should be divisible by $2$). So if the map can be divided into N large patches in the width and M large patches in the height, this new setup will now have $(2N - 1)$ patches in the width and $(2M - 1)$ patches in the height, discarding patches that are halfway out of bounds. These patches are then fed to the neural network in the exact same fashion as the previous method. A second grid overlay is then effectively created, with the size of these smaller patches exactly a quarter of the larger patches. 
 Figure \ref{fig:grid} provides a visual aid of this process, with the green patch indicating the large patch and the red patch indicating the resulting smaller patch.\\
-\\
+
 The idea is to link these smaller patches to its four larger patches, as these are its labeled parents. The labels of the parents were determined by the network by giving it a certainty between 0 and 1 for each class, with 1 the highest certainty this patch belonged to the corresponding class.
 A weighted majority vote is then used by summing the values of these classification of each of the four parents, grouped by their classes. The highest sum will be picked as the winner of the majority vote and its corresponding class will be used as a label for the smaller patch.\\
-\\
+
 For example, if there are three possible classes, $A$,$B$ and $C$, the certainty values of a patch can be denoted as $\{a_i, b_i, c_i\}$ where $1 \leq i \leq 4$. The values of the four parents of a small patch are then weighted, so you end up with $\{ \frac{1}{4}\sum_{i=1}^{4} a_i, \frac{1}{4}\sum_{i=1}^{4} b_i, \frac{1}{4}\sum_{i=1}^{4} c_i\}$. Whomever is biggest, wins. Doing this for all $(2N - 1) \times (2M - 1)$ patches results in a new classification grid showing more detail. This in turn allows the user to make a finer classification and switch back and forth accordingly via the toggle button displayed in the impression of Figure \ref{fig:impression}.
 
 \begin{figure}[h!]
@@ -201,7 +204,7 @@ The impression given above in Figure \ref{fig:impression} is close to what the e
     \caption{Communication visualization between front end and back end.}
 	\label{fig:communication}
 \end{figure}
-\noindent
+
 First, at the front end, an image is acquired by the user from a map API call. The image is immediately sent to the back end. There, patches are extracted according to a certain protocol (specific size and sequence) which also depend on whether small or large patches need to be visualized. The patches are classified by our Neural Network. Send back to the front end are the label results in a list according to the sequence defined by the protocol mentioned earlier. Back at the front end the image is made into a grid which also corresponds to the size and sequence of the protocol. The squares in the grid are then colored in according to the labels in the list that had been sent back.
 
 \section{Technical Details}
@@ -209,7 +212,7 @@ The front end consists of a web based interface, capable of visualizing the map 
 
 \section{Map dataset}
 The satellite imagery used in this project is acquired from the Bing Maps database \cite{bing}. A predefined size of the map is displayed on the front end, with satellite view enabled at a height of 100 meters. The labels were turned off, along with other controls or visible logos, which could interfere with the classification.  A random location inside the Amsterdam area is generated.\\
-\\
+
 For training, satellite images from the same source and practice mentioned above are drawn on a per category/label basis. Meaning: specific images of locations only showing one category (water, forest, city) are being taken. Then patches are acquired code-wise over those images so that for each patch it is known what category/label belongs to it. Every patch has a size of 40x40 pixels. These images are taken from a larger corpus than the Amsterdam area, from across the world but focussing on the Netherlands. This way of acquiring labelled data was done for efficiency purposes, but is suboptimal; an entire image is classified in one class, when in reality they contain patches from the other classes. For example, all cities have some park, gardens and pools. When the larger image is divided into smaller patches, patches containing just gardens labeled as city appear. Moreover, because an image is saved as a rectangle, the patches from the outer edge of the cities, water and vegeation are left out (since otherwise they would contain other classes as well). However, water for example has another structure and colour close to the water edge, and these patches are not included in the training data. 
 
 \chapter{Convolutional Neural Network}
@@ -224,12 +227,11 @@ The model we implement is LeCun's LeNet-1 \cite{lenet}. This model uses an alter
     \caption{The architecture of the CNN proposed by LeNet. H1 and H3 are the convolution layers, H2 and H4 the sub-sampling layers to reduce the dimension. }
 	\label{fig:Architecture}
 \end{figure}
-\\\\
 
-The final architecture we used for the application had the following characteristics: 
+One of the biggest advantages of using CNN, and especially LeCun's LeNet-1 implementation, is the incorporation of backpropagation learning. Meaning that all the weights of the layers are adjusted iteratively, eliminating the need to manually create the convolution masks.\\
 
-One of the biggest advantages of using CNN, and especially LeCun's LeNet-1 implementation, is the incorporation of backpropagation learning. Meaning that all the weights of the layers are adjusted iteratively, eliminating the need to manually create the convolution masks.
-\\
+The final architecture we used for the application will be discussed in Section \ref{sec:finalimpl}
+
 \section{Backpropagation}
 \label{sec:BP}
 To train the network, we have to adjust several parameters in the network. In this research we consider backpropagation from the output layer to layers H4 and H3. In the whole network we use the Sigmoidal activation functions, defined as:
@@ -240,7 +242,9 @@ The error function is defined as:
 \begin{equation}
 E=\sum_{k} \frac{1}{2}|t_k-F_{k}|^{2}
 \end{equation}
-Where $t_k$ represents the labeled class of the training and $F_{k}$ is the corresponding activation of the classifier neuron . This variable is 1 if the corresponding class is trained and 0 if this is not the case. Below the functions are listed in which we go from the activation of our classifier neuron to weights present in layer H3. In these equations $r$ stands for row which is the first branch after the first convolution i.e. the total rows is equal to the amount of different feature maps in H1. $b$ stands for the amount of branches per row. $k$ stands for the amount of classes which are trained by the network.
+Where $t_k$ represents the labeled class of the training and $F_{k}$ is the corresponding activation of the classifier neuron . This variable is 1 if the corresponding class is trained and 0 if this is not the case. \\
+
+Below the functions are listed in which we go from the activation of our classifier neuron to weights present in layer H3. In these equations $r$ stands for row which is the first branch after the first convolution i.e. the total rows is equal to the amount of different feature maps in H1. $b$ stands for the amount of branches per row. $k$ stands for the amount of classes which are trained by the network.
 \begin{equation}
 \begin{split}
 	&F_{k}= f( x_{k}) \\
@@ -250,9 +254,9 @@ Where $t_k$ represents the labeled class of the training and $F_{k}$ is the corr
 	&x^{3rb}[2i+u,2j+v]=\sum_{nm} W^{2rb}[n,m] \; H^{2rb}[n+(2i+u),m+(2j+v)] -b^{3rb}
 \end{split}
 \end{equation}
-In the above equations $i$ and $j$ are the row and column respectively for the elements in the output maps and end-weight matrix $ W^{4rbk}$. The superscript in the latter indicates for layer H4 and corresponding row $r$ and branch $b$. The elements $u$ and $v$ are the elements over the sub-sampling kernel where $n$ and $m$ are the elements over convolution kernel $W^{2rb}$. From these equations we can calculate the update-rules for backpropagation. This is done by applying the gradient descent method in which we calculate the derivatives of the error function. The update-rule consists of the derivative with respect to the parameter we want to update.  
-\\\\
-For updating $W^{4rbk}$, also called the end-weights, we use:
+In the above equations $i$ and $j$ are the row and column respectively for the elements in the output maps and end-weight matrix $ W^{4rbk}$. The superscript in the latter indicates for layer H4 and corresponding row $r$ and branch $b$. The elements $u$ and $v$ are the elements over the sub-sampling kernel where $n$ and $m$ are the elements over convolution kernel $W^{2rb}$.\\
+
+From these equations we can calculate the update-rules for backpropagation. This is done by applying the gradient descent method in which we calculate the derivatives of the error function. The update-rule consists of the derivative with respect to the parameter we want to update. For updating $W^{4rbk}$, also called the end-weights, we use:
 \begin{equation}
 \begin{split}
 \Delta W^{4rbk}[i,j]&= \sum_{k} - \eta \frac{dE}{d F_{k}} \frac{dF_{k}}{dx_{k}} \frac{dx_{k}}{dW^{4rbk}[i,j]} \\
@@ -312,14 +316,17 @@ The architectures of the Convolutional Neural Networks we use for this research 
 
 \section{RGB values}
 \label{sec:RGB}
-The literature we found primarily focuses on hand-written document recognition and facial recognition, both assuming grey-scale images. The images available to us are colour images, so a decision had to be made about what information to take into account. To train the system on the structure using the architecture above we used the so-called relative luminence $Y$, reflecting the human visual perception: green light contributes most to the intensity perceived by humans and blue light the least \cite{stokes1996standard}: 
+The literature we found primarily focuses on hand-written document recognition and facial recognition, both assuming grey-scale images. The images available to us are colour images, so a decision had to be made about what information to take into account. To train the system on the structure using the architecture above we used the so-called relative luminence $Y$, reflecting the human visual perception: green light contributes most to the intensity perceived by humans and blue light the least \cite{stokes1996standard}:
 \begin{equation}
 Y=0.2126 R+0.7152 G+0.0722 B
 \end{equation}
+\noindent
+In which R, G, and B indicate the red, green and blue RGB value respectively.\\
 
-In which R, G, and B indicate the red, green and blue RGB value respectively. Because it was assumed that the colour itself could provide information on the class it should be classified in, we experimented with taking this information into account as well. That was done by calculating the average intensity of the R, G and B values of every patch and adding 3 nodes to the output nodes. The normalized average intensity of the patches was fed as an input to these 3 nodes and the corresponding weights were trained in the same way as the other output nodes. 
+Because it was assumed that the colour itself could provide information on the class it should be classified in, we experimented with taking this information into account as well. That was done by calculating the average intensity of the R, G and B values of every patch and adding 3 nodes to the output nodes. The normalized average intensity of the patches was fed as an input to these 3 nodes and the corresponding weights were trained in the same way as the other output nodes. This eventually would serve us as the competing notion to our research question, where we investigate the feature extraction generality of Convolutional Neural Networks. 
 
 \section{Final architecture implemented in application}
+\label{sec:finalimpl}
 To investigate which architectures are sufficient to use for our application a few architectures were explored. The various parameters as described above are changed resulting in different network designs. We focussed on a system that automatically learns the feature extraction, but we were limited in the complexity of the architecture because of the time available and because we did not have acces to large GPU's and GUI's. That is why we developed a relatively small architecture in which only the first convolution layer was predefined. The following components in our architecture were used:
 
 \begin{itemize}
@@ -332,7 +339,7 @@ To investigate which architectures are sufficient to use for our application a f
 \item \textbf{Output} We consider for this research section a three-class system: Forest, City and Water. So the output consists of 3 nodes.
 \end{itemize} 
 
-The network can be trained in two different ways: backpropagation on the classifier neuron biases ($b_{k}$) and end-weight ($ W^{4rb}$) or the latter and further backpropagation where also the weights of the second convolutional kernels are trained ($ W^{2rb} $) and their biases ($b^{3rb}$). First we investigated how the networks perform when we only do the first type of training since further backpropagation will be more computationally expensive. Their performance is measured with a method based on cross-validation. 
+The network can be trained in two different ways: backpropagation on the classifier neuron biases ($b_{k}$) and end-weight ($ W^{4rb}$) or the latter and a further backpropagation process where also the weights of the second convolutional kernels are trained ($ W^{2rb} $) together with their biases ($b^{3rb}$). We started with investigating how the networks perform when we only do the first type of training since further backpropagation will be more computationally expensive. Their performance is measured with a method based on cross-validation.\\
 
 In the end we used the afore-mentioned architecture and we tested the performance of the following settings: 
 \begin{itemize}
@@ -344,23 +351,22 @@ In the end we used the afore-mentioned architecture and we tested the performanc
 
 
 \subsection{learning rates}
-The performance of the architecture was highly dependent on the learning rates used. When initializing large learning rates can be chosen so that the network learns roughly how to recognize the classes, but moving further only detailed information can be withdrawn by adjusting the learning rates. We heuristically experimented a lot with the learning rates and in the end came up with a system in which the learning rates were lowered by circa a factor 5 after 5000 samples. 
-
+The performance of the architecture was highly dependent on the learning rates used. When initializing large learning rates can be chosen so that the network learns roughly how to recognize the classes, but moving further only detailed information can be withdrawn by adjusting the learning rates. We heuristically experimented a lot with the learning rates and in the end came up with a system in which the learning rates were lowered by approximately a factor of 5 after 5000 samples. 
 
 \subsection{Cross Validation}
 
-To compare the different architectures we used a cross-validation based method. This includes the training of the network on 90\% of the data/total amount of patches. The remaining 10\% is used to validate the performance of the network. In the test phase the values are calculated by the relative fraction of correctly assigned patched, or: 
+To compare the different architectures we used a cross-validation based method. This includes the training of the network on 90\% of the data/total amount of patches. The remaining (revolving) 10\% is used to validate the performance of the network. In the test phase the values are calculated by the relative fraction of correctly assigned patched, or: 
 
 \begin{equation}
 \label{eq:P}
 P= \frac{N_{right}}{N_{right}+ N_{wrong}}
 \end{equation}
 
-The final value is chosen by averaging over the 10 test sets, and the uncertainty is defined as the standard deviation within these test sets.
+The final value is chosen by averaging over the 10 test sets, and the uncertainty is defined as the standard deviation within these test sets.\\
 
 The total amount of patches used was 21407, of which 7163 forest patches, 6350 city patches and 7894 water patches. 
 
-\section{Programs and packages to develop CNN}
+\section{Programs and packages to develop the CNN}
 The networks were programmed in \textit{Python}. No special packages related to Neural Networks were used such as \textit{Theano}.  So we completely built the architecture ourselves. For the convolution operation, we used the package \textit{Scipy.signals} which contains a convolution function. Furthermore, some additional packages were used for basic operations in the program such as \textit{Numpy} and \textit{PIL}. The latter is used to import images for the root. Since we use patches to train the network, we write a function which divides the imported images in patches. Each patch gets the label corresponding to the class it belongs to so it can be used to train the network. The images were obtained from Bing Maps \cite{bing}. Suitable images were gathered by selecting only places which contains the favored class. An example is shown in Figure \ref{fig:classexample}. A side note has to be included for the images with the class city since these images may include some tree, grassland or water patches and thus will be labeled with the class city. Most other classes, such as forest, grassland and water, does not entail this problem since a great proportion of the world contains purely these classes.
 
 \begin{figure}[h!]
@@ -398,7 +404,8 @@ The would haves requirements were on a whole different level and thus are self-e
 The quantitative results consists of different parts. First, to choose the different architectures that we wanted to research into detail we needed an overall idea of what works good and what does not. To do this we built a lot of different architectures, manually setting kernels and in this way empirically testing different architectures. The general results are mentioned first. Subsequently, an elaboration of the detailed results of the cross validation is included. Finally, we tested some more complex architectures to research its potentional in future research. These results are included in Appendix \label{app:DiffentArchitectures}.
 
 \subsection{Results of manually selecting kernels}
-In the first phase of our research we made a convolutional neural network based on LeNet-1. We experimented with different convolution kernels in the first layer (H1) of the network and differed the amount of branches in the third layer (H3). We started with manual empirically chosen convolution kernels for both layers H1 and H3. We began with input patches of 50 x 50 followed by a convolution kernel of 5x5 resulting in a feature map of dimensions 46x46. Next, sub-sampling with a dimension reduction of 2 results in a feature map of dimension 23x23. Again we did different 4x4 convolution kernel operation creating branches in H3 resulting in 20x20 feature maps. Sub-sampling with a dimension reduction of 5 resulted in an 4x4 output map. These output maps are then connected to two different classification neurons for Forest and City. \\\\
+In the first phase of our research we made a convolutional neural network based on LeNet-1. We experimented with different convolution kernels in the first layer (H1) of the network and differed the amount of branches in the third layer (H3). We started with manual empirically chosen convolution kernels for both layers H1 and H3. We began with input patches of 50 x 50 followed by a convolution kernel of 5x5 resulting in a feature map of dimensions 46x46. Next, sub-sampling with a dimension reduction of 2 results in a feature map of dimension 23x23. Again we did different 4x4 convolution kernel operation creating branches in H3 resulting in 20x20 feature maps. Sub-sampling with a dimension reduction of 5 resulted in an 4x4 output map. These output maps are then connected to two different classification neurons for Forest and City. \\
+
 We used the Sigmoid function as activation function only for our classification-neurons. Thus, no activation functions were used earlier in the network (compared to LeNet-1). We performed backpropagation on the weights connecting the output maps with the classification neurons and biases. The first functioning results where found with 4 feature maps in H1 and 2 feature maps in H3 each where the network was enabled to recognize some forest/city patches from an new image. These results were too poor to include in this report. We used the convolution kernels shown in figure \ref{fig:firstFilters}. The Network was trained on structure only so no color features were included. 
 \begin{figure}[h!]
 	\centering
@@ -442,13 +449,13 @@ As mentioned in the \ref{chap:method}, we expected that the RGB values contained
 \label{tab:crossvalidation results}
 \end{table}
 
-Two notes should be made by these results, first of all that there was a large in-class variance in the datasamples. This makes it hard to achieve a high performance, but improves the application. Second, that the values seen over here are not entirely accurate, since both of the training and test images include patches that are labelled wrongly (gardens, parks and pools within cities for example). 
+Two notes should be made by these results, first of all that there was a large in-class variance in the datasamples. This makes it hard to achieve a high performance, but improves the application. Second, that the values seen over here are not entirely accurate, since both of the training and test images include patches that are labelled wrongly (gardens, parks and pools within cities for example).\\
 
-As can be seen in Table \ref{tab:crossvalidation results} the best performance was achieved by taking into account the RGB values and no training of the second convolution kernel. 
+As can be seen in Table \ref{tab:crossvalidation results} the best performance was achieved by taking into account the RGB values and no training of the second convolution kernel.\\
 
-There is a large difference between performance when the RGB colours are taken into account, this indicates that there is indeed a lot of information hidden in the colour values. Moreover, the system performs poorly when this information is not taking into account, implying that the currently used architecture is not capable of classifying correctly just on structure. 
+There is a large difference between performance when the RGB colours are taken into account, this indicates that there is indeed a lot of information hidden in the colour values. Moreover, the system performs poorly when this information is not taking into account, implying that the currently used architecture is not capable of classifying correctly just on structure.\\
 
-The accuracy decreases when training the second convolution layer, although the difference is not significant. We would have expected it the other way around. The hypothesis is that to train the second convolution layer properly, and thereby increasing the complexity significantly, the current dataset is too small and overfitting takes place. The small difference in performance could be due to heuristically more suitable initialization weights than the trainable weights. 
+The accuracy decreases when training the second convolution layer, although the difference is not significant. We would have expected it the other way around. The hypothesis is that to train the second convolution layer properly, and thereby increasing the complexity significantly, the current dataset is too small and overfitting takes place. The small difference in performance could be due to heuristically more suitable initialization weights than the trainable weights.\\
 
 In future research the dataset should be expanded considerably to test whether this hypothesis is correct. 
 
@@ -463,7 +470,7 @@ In future research the dataset should be expanded considerably to test whether t
 	
 \chapter{Evaluation of different CNN architectures}
 \label{app:DiffentArchitectures}
-This section serves to show the difference in accuracy,  when the complexity of the architecture is higher, so more convolution and pooling layers are included. Al thel networks included had similar convolution kernels for the first layer. If we used $3$ rows or convolution kernels in the first layer we used the kernel types shown in figure \ref{fig:3filters}. For the networks with $5$ and $7$ the kernels are shown in figure \ref{fig:5filters} and \ref{fig:7filters} respectively. The weights for the second convolution kernels were drawn from a uniform distribution and therefore these kernels differed for each network. With equation \ref{eq:P} the performances of the networks was calculated. The classifier neuron with the highest activation value is taken to be the class of classification. If this class matches the corresponding class of the input patch, the network is considered to evaluate the patch as correct, otherwise it is classified as wrong. Mind that city patches might include tree or grassland patches as well.
+This section serves to show the difference in accuracy,  when the complexity of the architecture is higher, so more convolution and pooling layers are included. Al the networks included had similar convolution kernels for the first layer. If we used $3$ rows or convolution kernels in the first layer we used the kernel types shown in figure \ref{fig:3filters}. For the networks with $5$ and $7$ the kernels are shown in figure \ref{fig:5filters} and \ref{fig:7filters} respectively. The weights for the second convolution kernels were drawn from a uniform distribution and therefore these kernels differed for each network. With equation \ref{eq:P} the performances of the networks was calculated. The classifier neuron with the highest activation value is taken to be the class of classification. If this class matches the corresponding class of the input patch, the network is considered to evaluate the patch as correct, otherwise it is classified as wrong. Mind that city patches might include tree or grassland patches as well.
 
 \begin{tiny}
 	\begin{center}
