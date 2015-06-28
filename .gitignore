@@ -22,3 +22,6 @@
 *.out
 *.synctex.gz
 *.pdf
+
+code/node_modules/
+node_modules/
