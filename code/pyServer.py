@@ -17,11 +17,6 @@ from itertools import product
 
 
 class RPC(object):
-    '''pass the method a name, it replies "Hello name!"'''
-
-    def hello(self, name):
-        return "Hello, {0}!".format(name)
-
     def classify_small(self, url, patchSize):
         img = self.crop_image(url, patchSize)
 

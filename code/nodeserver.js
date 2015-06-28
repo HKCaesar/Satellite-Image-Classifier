@@ -19,60 +19,42 @@ nodeServer.use('/', express.static(__dirname))
 // Connect to Python server
 pythonServer.connect("tcp://" + serverUrl + ":" + zeroRPCPort);
 
-nodeServer.get('/', function(req, res) {
-	res.sendFile(path.join(__dirname + '/index.html'));
+nodeServer.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname + '/index.html'));
 });
 
-var socketIo = require('socket.io').listen(socketPort); 
+var socketIo = require('socket.io').listen(socketPort);
 
 socketIo.sockets.on('connection', function (socket) {
-	// Wait for the event raised by the web client
-	socket.on('event', function (data) {  
+  socket.on('classify_small', function (data) {
+    pythonServer.invoke('classify_small', data.url, data.patchDim,
+      function (error, reply, streaming) {
+        if (error) {
+          console.log("ERROR: ", error);
+        } else {
+          console.log("ok!");
+        }
+        console.log('done small')
+        socket.emit('classify_reply', reply);
+      });
+  });
 
-		// Calls the method on the Python server
-		pythonServer.invoke("hello", "Tung", function(error, reply, streaming) {
-			if(error) {
-				console.log("ERROR: ", error);
-			}
+  socket.on('classify_large', function (data) {
+    pythonServer.invoke('classify_large', data.url, data.patchDim,
+      function (error, reply, streaming) {
+        if (error) {
+          console.log("ERROR: ", error);
+        } else {
+          console.log("ok!");
+        }
+        console.log('done large')
+        socket.emit('classify_reply', reply);
+      });
+  });
 
-			console.log("Received from ZeroRPC: " + reply);
-
-			// Emit reply flag to web client
-			socket.emit('reply', reply);
-		});
-	});
-
-	socket.on('classify_small', function (data) {
-		pythonServer.invoke('classify_small', data.url, data.patchDim, 
-			function(error, reply, streaming) {
-				if(error) {
-					console.log("ERROR: ", error);
-				}
-				else {
-					console.log("ok!");
-				}
-				console.log('done small')
-				socket.emit('classify_reply', reply);
-			});
-	});
-
-	socket.on('classify_large', function (data) {
-		pythonServer.invoke('classify_large', data.url, data.patchDim, 
-			function(error, reply, streaming) {
-				if(error) {
-					console.log("ERROR: ", error);
-				}
-				else {
-					console.log("ok!");
-				}
-				console.log('done large')
-				socket.emit('classify_reply', reply);
-			});
-	});
-
-	socket.on('location', function (data) {
-		pythonServer.invoke("location", data);
-	});
+  socket.on('location', function (data) {
+    pythonServer.invoke("location", data);
+  });
 });
 
 console.log("Starting web server at " + serverUrl + ":" + nodePort);

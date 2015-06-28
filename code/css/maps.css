@@ -1,6 +1,6 @@
 
 #legend {
-	/*margin-top: 105px;*/
+	margin-top: 105px;
 	margin-left: 75px;
 	z-index:2;
 }
@@ -110,8 +110,9 @@
 	padding-top: 20px;
 }
 .restore-button {
+	/*margin-top: 105px;*/
 	padding-left: 30px;
-	padding-top: 10px;
+	padding-top: 115px;
 }
 
 .bootstrap-switch {

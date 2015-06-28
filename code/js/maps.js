@@ -17,14 +17,6 @@ var parents;
 
 var readyToClassify = false;
 
-// Emit event flag to node server
-socket.emit('event');
-
-// Perform action upon receiving reply flag
-socket.on('reply', function (data) {
-  console.log("Received from Node.js: " + data);
-});
-
 socket.on('classify_reply', function (data) {
   if (readyToClassify) {
     if (useSmallerGrid) {
