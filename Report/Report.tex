@@ -336,7 +336,7 @@ To investigate which architectures are sufficient to use for our application a f
 \end{itemize} 
 The network can be trained in two different ways: backpropagation on the classifier neuron biases ($b_{k}$) and end-weight ($ W^{4rb}$) or the latter and a further backpropagation process where also the weights of the second convolutional kernels are trained ($ W^{2rb} $) together with their biases ($b^{3rb}$). We started with investigating how the networks perform when we only do the first type of training since further backpropagation will be more computationally expensive. Their performance is measured with a method based on cross-validation.
 \\\\
-In the end we used the afore-mentioned architecture and we tested the performance of the following settings: 
+In the end we used the aforementioned architecture and we tested the performance of the following settings: 
 \begin{itemize}
 \item Taking no colors into account, and backpropagation limited to the end-weights.
 \item Taking the colors into account, and backpropagation limited to the end-weights.
